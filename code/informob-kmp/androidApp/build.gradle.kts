@@ -21,4 +21,13 @@ android {
 
 dependencies {
     implementation(project(":shared"))
+    implementation("com.google.android.material:material:1.4.0")
+    implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.0")
+}
+
+kotlin {
+    sourceSets {
+        val main by getting { kotlin.srcDir("src/main") }
+    }
 }
