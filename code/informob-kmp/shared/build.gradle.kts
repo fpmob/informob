@@ -1,3 +1,5 @@
+val compose_version = "1.1.1"
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -23,7 +25,25 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
-        val androidMain by getting { kotlin.srcDir("src/androidMain") }
+        val androidMain by getting { kotlin.srcDir("src/androidMain")
+            dependencies {
+                // TODO: @@@ not yet actually required
+                //implementation("androidx.core:core-ktx:1.7.0")
+                //implementation("androidx.compose.ui:ui:$compose_version")
+                implementation("androidx.compose.material:material:$compose_version")
+                implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
+                // TODO: @@@ not yet actually required
+                //implementation("androidx.lifecycle:lifecycle-runtime-ktx:0.3.1")
+                implementation("androidx.activity:activity-compose:1.3.1")
+                // TODO: @@@ not yet actually required
+                //testImplementation("junit:junit:4.13.2")
+                //androidTestImplementation("androidx.test.ext:junit:1.1.3")
+                //androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+                //androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
+                //debugImplementation("androidx.compose.ui:ui-tooling:$compose_version")
+                //debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
+            }
+        }
         val androidTest by getting { kotlin.srcDir("src/androidTest") }
         val iosX64Main by getting
         val iosArm64Main by getting
@@ -46,6 +66,18 @@ kotlin {
     }
 }
 
+// !!! from https://github.com/cl3m/multiplatform-compose/blob/develop/multiplatform-compose/build.gradle.kts
+// https://youtrack.jetbrains.com/issue/KT-38694
+//workaround (https://github.com/arunkumar9t2/compose_mpp_workaround/tree/patch-1):
+configurations {
+    create("composeCompiler") {
+        isCanBeConsumed = true
+    }
+}
+dependencies {
+    "composeCompiler"("androidx.compose.compiler:compiler:${compose_version}")
+}
+
 android {
     compileSdk = 32
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -53,5 +85,27 @@ android {
         minSdk = 21
         targetSdk = 32
     }
-
+    // !!! from https://github.com/cl3m/multiplatform-compose/blob/develop/multiplatform-compose/build.gradle.kts
+    afterEvaluate {
+        val composeCompilerJar =
+            configurations["composeCompiler"]
+                .resolve()
+                .singleOrNull()
+                ?: error("Please add \"androidx.compose:compose-compiler\" (and only that) as a \"composeCompiler\" dependency")
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+            kotlinOptions.freeCompilerArgs += listOf("-Xuse-ir", "-Xplugin=$composeCompilerJar")
+        }
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = compose_version
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = compose_version
+    }
 }
