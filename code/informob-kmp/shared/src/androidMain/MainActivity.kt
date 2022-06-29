@@ -1,4 +1,4 @@
-package org.informob.android
+package org.informob
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,8 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import org.informob.Greeting
-import org.informob.android.ui.theme.InformobTheme
+import org.informob.ui.theme.InformobTheme
 
 fun greet(): String {
     return Greeting().greeting()

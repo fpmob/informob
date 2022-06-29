@@ -1,4 +1,4 @@
-package org.informob.android.ui.theme
+package org.informob.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
