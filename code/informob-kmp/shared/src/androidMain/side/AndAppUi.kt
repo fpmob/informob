@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import org.informob.pure.present.*
 import org.informob.ui.theme.InformobTheme
 
-actual fun viewApp(appMutant: AppMutant): AppMutant = appMutant.also {
-    (appMutant.platformBlobRef as? ComponentActivity)?.run {
+fun andPresentMainScreen(appMutant: AppMutant): AppMutant = appMutant.apply {
+    ((platformBlobRef as? AndPlatformBlob)?.activity as? ComponentActivity)?.run {
         setContent { // !!! will not work outside of Activity class
             InformobTheme { appScreen() }
         }
