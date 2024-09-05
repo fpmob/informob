@@ -1,4 +1,4 @@
-val compose_version = "1.1.1"
+val compose_version = "1.5.4"
 
 plugins {
     kotlin("multiplatform")
@@ -15,6 +15,7 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
+            isStatic = true
         }
     }
 
@@ -34,7 +35,7 @@ kotlin {
                 implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
                 // TODO: @@@ not yet actually required
                 //implementation("androidx.lifecycle:lifecycle-runtime-ktx:0.3.1")
-                implementation("androidx.activity:activity-compose:1.3.1")
+                implementation("androidx.activity:activity-compose:1.6.1")
                 // TODO: @@@ not yet actually required
                 //testImplementation("junit:junit:4.13.2")
                 //androidTestImplementation("androidx.test.ext:junit:1.1.3")
@@ -44,7 +45,7 @@ kotlin {
                 //debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
             }
         }
-        val androidTest by getting { kotlin.srcDir("src/androidTest") }
+        //val androidTest by getting { kotlin.srcDir("src/androidTest") }
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -66,6 +67,7 @@ kotlin {
     }
 }
 
+/* TODO: ### DISABLED UNTIL WE FIGURE OUT IF WE STILL NEED THIS
 // !!! from https://github.com/cl3m/multiplatform-compose/blob/develop/multiplatform-compose/build.gradle.kts
 // https://youtrack.jetbrains.com/issue/KT-38694
 //workaround (https://github.com/arunkumar9t2/compose_mpp_workaround/tree/patch-1):
@@ -77,14 +79,20 @@ configurations {
 dependencies {
     "composeCompiler"("androidx.compose.compiler:compiler:${compose_version}")
 }
+*/
 
 android {
-    compileSdk = 32
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    compileSdk = 34
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
+        targetSdk = 34
     }
+/* TODO: ### DISABLED UNTIL WE FIGURE OUT IF WE STILL NEED THIS
     // !!! from https://github.com/cl3m/multiplatform-compose/blob/develop/multiplatform-compose/build.gradle.kts
     afterEvaluate {
         val composeCompilerJar =
@@ -96,16 +104,12 @@ android {
             kotlinOptions.freeCompilerArgs += listOf("-Xuse-ir", "-Xplugin=$composeCompilerJar")
         }
     }
+*/
     buildFeatures {
         compose = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = compose_version
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = compose_version
-    }
+    namespace = "org.informob"
 }
