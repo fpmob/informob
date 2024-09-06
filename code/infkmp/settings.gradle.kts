@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "informob-kmp"
+rootProject.name = "infkmp"
 include(":infand")
 include(":infsha")
