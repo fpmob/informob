@@ -14,5 +14,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "informob-kmp"
-include(":androidApp")
-include(":shared")
+include(":infand")
+include(":infsha")
