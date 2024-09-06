@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-import shared
+import infsha
 
 @main
 struct MainApp: App {

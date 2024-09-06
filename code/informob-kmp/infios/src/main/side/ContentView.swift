@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import shared
+import infsha
 
 struct ContentView: View {
     let osStats = OsStatsPresentKt.osStatsPresent(
