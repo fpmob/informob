@@ -1,4 +1,4 @@
-// Copyright 2022 Christopher Augustus
+// Copyright © 2022 - 2024 Christopher Augustus
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,7 +8,7 @@
 import SwiftUI
 import infsha
 
-struct ContentView: View {
+struct AppView: View {
     let osStats = OsStatsPresentKt.osStatsPresent(
         model: PlatformIosKt.platformOsStats())
 
@@ -26,8 +26,6 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
-	}
+struct AppView_Previews: PreviewProvider {
+	static var previews: some View { AppView() }
 }
