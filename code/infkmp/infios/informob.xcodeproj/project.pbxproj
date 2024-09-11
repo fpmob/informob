@@ -61,10 +61,10 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
-				7555FF8C242A565B00829871 /* Info.plist */,
-				7555FF7D242A565900829871 /* src */,
-				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
+				7555FF8C242A565B00829871 /* Info.plist */,
+				7555FF7C242A565900829871 /* Products */,
+				7555FF7D242A565900829871 /* src */,
 			);
 			sourceTree = "<group>";
 		};
@@ -351,6 +351,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.informob.app.uma;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -377,6 +378,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.informob.app.uma;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
