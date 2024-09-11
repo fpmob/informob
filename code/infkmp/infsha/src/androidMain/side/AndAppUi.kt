@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -31,9 +32,9 @@ fun andPresentMainScreen(appMutant: AppMutant): AppMutant = appMutant.apply {
 @Composable
 fun appScreen() {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround,
-        modifier = Modifier.fillMaxSize()
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.fillMaxSize().background(Color.Black)
     ) {
         osStatsView(osStatsPresent(platformOsStats()))
     }
@@ -44,15 +45,17 @@ fun osStatsView(model: OsStatsPresent) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .background(MaterialTheme.colors.secondary)
+            .background(Color(160, 80, 160)) // purple
             .padding(all = 12.dp)
     ) {
         Text(
             text = model.name,
-            style = MaterialTheme.typography.h5)
+            color = Color.White,
+            style = MaterialTheme.typography.subtitle2)
         Text(
             text = model.version,
-            style = MaterialTheme.typography.h6)
+            color = Color.White,
+            style = MaterialTheme.typography.subtitle1)
     }
 }
 
