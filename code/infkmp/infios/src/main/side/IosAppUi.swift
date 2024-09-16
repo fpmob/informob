@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts // iOS 16
 import infsha
 
 struct AppView: View {
@@ -14,7 +15,7 @@ struct AppView: View {
     let spacing = 16.0
     let buttonx = 80.0
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
                 OsStatsView()
                 Spacer()
@@ -32,10 +33,10 @@ struct AppView: View {
                 Spacer()
             }//.border(Color.yellow, width: 1)
             if hasSwiftUi {
-                ZStack { Color.blue  }.border(Color.orange, width: 4)
+                PerfView().border(Color.blue,  width: 4)
             } else { Spacer() }
             if hasUinota {
-                ZStack { Color.green }.border(Color.orange, width: 4)
+                PerfView().border(Color.green, width: 4)
             } else { Spacer() }
         }
         .background(Color.black)
@@ -75,3 +76,53 @@ struct OsStatsView: View {
         //.border(Color.yellow, width: 1)
     }
 }
+
+struct PerfView: View {
+    let stats = mockPerfStats()
+    let colorBack = Color(red: 0.5, green: 0.6, blue: 0.6)
+    let colorBar  = Color(red: 0.6, green: 0.2, blue: 0.2)
+    var body: some View {
+        if #available(iOS 16.0, *) {
+            Chart(stats) {
+                BarMark(
+                    x: .value("%", $0.percent),
+                    y: .value("?", "    \($0.value) of \($0.max) \($0.id)")
+                )
+                .foregroundStyle(colorBar
+                    .blendMode(.difference))
+                    //.blendMode(.destinationOver))
+                //.opacity(0.5)
+                //.zIndex(-1) // !!! iOS 17
+            }
+            .chartXAxis(.hidden)
+            .chartXScale(domain: 0...100)
+            .chartYAxis {
+                AxisMarks(preset: .inset) {
+                    AxisValueLabel(centered: true)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(colorBar)
+                }
+            }
+            .background(colorBack)
+        } else {
+            // TODO: ### CUSTOM CHART FOR iOS < 16
+            ZStack { colorBack }
+        }
+    }
+}
+
+struct PerfStat: Identifiable {
+    let id:      String
+    let max:     Int
+    let value:   Int
+    var percent: Double {
+        if max > 0 { Double(value)/Double(max) * 100.0 } else { 0.0 }
+    }
+}
+
+func mockPerfStats() -> [PerfStat] { [
+    .init(id: "cores",   max:  64, value:  8),
+    .init(id: "threads", max: 100, value: 50),
+    .init(id: "tasks",   max: 100, value: 30),
+    .init(id: "awaits",  max: 100, value: 20),
+] }
