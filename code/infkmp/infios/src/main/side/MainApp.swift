@@ -12,7 +12,15 @@ import infsha
 @main
 struct MainApp: App {
     // TODO: @@@ REFACTOR COMPOSE UI CODE TO iosAppPlatformFunctions.presentMainScreen(...)
-    var body: some Scene { WindowGroup { AppView() } }
+    var body: some Scene {
+        let perfStats = PerfStats()
+        WindowGroup {
+            let rendStats = RendStats()
+            AppView(
+                perfStats: perfStats,
+                rendStats: rendStats)
+        }
+    }
     var appMutant = AppMutantKt.appMutant()
     init() {
         var appMutant = AppMutantKt.appMutant(

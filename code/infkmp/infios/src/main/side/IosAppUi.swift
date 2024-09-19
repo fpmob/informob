@@ -10,8 +10,10 @@ import Charts // iOS 16
 import infsha
 
 struct AppView: View {
-    @State private var hasSwiftUi = false
-    @State private var hasUinota  = false
+    @ObservedObject var perfStats: PerfStats
+    @ObservedObject var rendStats: RendStats
+    @State private var hasPerfs = false
+    @State private var hasRends = false
     let spacing = 16.0
     let buttonx = 80.0
     var body: some View {
@@ -20,32 +22,41 @@ struct AppView: View {
                 OsStatsView()
                 Spacer()
                 VStack(spacing: spacing) {
-                    Button {
-                        hasSwiftUi = !hasSwiftUi
+                    Button { hasPerfs.toggle()
                     } label: { ButtonViewText(
-                        text: "Swift UI", x:buttonx, y:spacing) }
-                    Button {
-                        hasUinota = !hasUinota
+                        text: "Perfs", x:buttonx, y:spacing) }
+                    Button { hasRends.toggle()
                     } label: { ButtonViewText(
-                        text: "Uinota"  , x:buttonx, y:spacing) }
+                        text: "Rends", x:buttonx, y:spacing) }
                 }.padding()
                 //.border(Color.yellow, width: 1)
-                Spacer()
             }//.border(Color.yellow, width: 1)
-            if hasSwiftUi {
-                PerfView().border(Color.blue,  width: 4)
+            if hasPerfs {
+                PerfView(perfStats: perfStats,
+                         rendStats: rendStats)
+                    .border(Color.orange, width: 4)
             } else { Spacer() }
-            if hasUinota {
-                PerfView().border(Color.green, width: 4)
+            if hasRends {
+                RendView(rendStats: rendStats)
+                    .border(Color.blue,   width: 4)
             } else { Spacer() }
         }
         .background(Color.black)
         //.border(Color.yellow, width: 1)
+        .onAppear {
+            rendStats.update(
+                id: "AppView",
+                changes: "(unknown)"
+                    // TODO: ### AppView._printChanges()
+            )
+        }
     }
 }
 
 struct AppView_Previews: PreviewProvider {
-	static var previews: some View { AppView() }
+	static var previews: some View {
+        AppView(perfStats: PerfStats(),
+                rendStats: RendStats()) }
 }
 
 struct ButtonViewText: View {
@@ -78,12 +89,13 @@ struct OsStatsView: View {
 }
 
 struct PerfView: View {
-    let stats = mockPerfStats()
-    let colorBack = Color(red: 0.5, green: 0.6, blue: 0.6)
-    let colorBar  = Color(red: 0.6, green: 0.2, blue: 0.2)
+    @ObservedObject var perfStats: PerfStats
+    @ObservedObject var rendStats: RendStats
+    let colorBack = Color(red: 0.7, green: 0.7, blue: 0.6)
+    let colorBar  = Color(red: 0.7, green: 0.3, blue: 0.3)
     var body: some View {
         if #available(iOS 16.0, *) {
-            Chart(stats) {
+            Chart(perfStats.array) {
                 BarMark(
                     x: .value("%", $0.percent),
                     y: .value("?", "    \($0.value) of \($0.max) \($0.id)")
@@ -104,6 +116,13 @@ struct PerfView: View {
                 }
             }
             .background(colorBack)
+            .onAppear {
+                rendStats.update(
+                    id: "PerfView",
+                    changes: "(unknown)"
+                        // TODO: ### AppView._printChanges()
+                )
+            }
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
             ZStack { colorBack }
@@ -111,18 +130,43 @@ struct PerfView: View {
     }
 }
 
-struct PerfStat: Identifiable {
-    let id:      String
-    let max:     Int
-    let value:   Int
-    var percent: Double {
-        if max > 0 { Double(value)/Double(max) * 100.0 } else { 0.0 }
+struct RendView: View {
+    @ObservedObject var rendStats: RendStats
+    let colorBack = Color(red: 0.6, green: 0.7, blue: 0.7)
+    let colorBar  = Color(red: 0.4, green: 0.4, blue: 0.8)
+    var body: some View {
+        if #available(iOS 16.0, *) {
+            Chart(rendStats.sortedArray()) {
+                BarMark(
+                    x: .value("up", $0.updates),
+                    y: .value("id", "    \($0.id) \($0.updates)")
+                )
+                .foregroundStyle(colorBar
+                    .blendMode(.difference))
+                    //.blendMode(.destinationOver))
+                //.opacity(0.5)
+                //.zIndex(-1) // !!! iOS 17
+            }
+            .chartXAxis(.hidden)
+            .chartXScale(domain: 0...100)
+            .chartYAxis {
+                AxisMarks(preset: .inset) {
+                    AxisValueLabel(centered: true)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(colorBar)
+                }
+            }
+            .background(colorBack)
+            .onAppear {
+                rendStats.update(
+                    id: "RendView",
+                    changes: "(unknown)"
+                        // TODO: ### AppView._printChanges()
+                )
+            }
+        } else {
+            // TODO: ### CUSTOM CHART FOR iOS < 16
+            ZStack { colorBack }
+        }
     }
 }
-
-func mockPerfStats() -> [PerfStat] { [
-    .init(id: "cores",   max:  64, value:  8),
-    .init(id: "threads", max: 100, value: 50),
-    .init(id: "tasks",   max: 100, value: 30),
-    .init(id: "awaits",  max: 100, value: 20),
-] }
