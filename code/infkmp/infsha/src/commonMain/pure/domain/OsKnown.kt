@@ -1,8 +1,8 @@
-// Copyright 2022 Christopher Augustus
+//  Copyright © 2022 - 2025 Christopher Augustus
 //
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at https://mozilla.org/MPL/2.0/.
 //
 
 package org.informob.pure.domain
@@ -111,5 +111,29 @@ enum class OsKnown(val value: OsStats) {
         apiLevel = 33,
         nickname = "Tiramisu",
         version = "13"
+    )),
+    ANDROID_14(OsStats(
+        category = OsCategory.Open,
+        family = OsFamily.Android,
+        maker = OsMaker.Google,
+        apiLevel = 34,
+        nickname = "Upside Down Cake",
+        version = "14"
+    )),
+    ANDROID_15(OsStats(
+        category = OsCategory.Open,
+        family = OsFamily.Android,
+        maker = OsMaker.Google,
+        apiLevel = 35,
+        nickname = "Vanilla Ice Cream",
+        version = "15"
+    )),
+    ANDROID_16(OsStats(
+        category = OsCategory.Open,
+        family = OsFamily.Android,
+        maker = OsMaker.Google,
+        apiLevel = 36,
+        nickname = "Baklava",
+        version = "16"
     )),
 }
