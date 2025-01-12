@@ -9,6 +9,9 @@ import SwiftUI
 import Charts // iOS 16
 import infsha
 
+let colorBackPerf = Color(red: 0.7, green: 0.7, blue: 0.6)
+let colorBackRend = Color(red: 0.6, green: 0.7, blue: 0.7)
+
 struct AppView: View {
     @ObservedObject var perfStats: PerfStats
     @ObservedObject var rendStats: RendStats
@@ -17,31 +20,45 @@ struct AppView: View {
     let spacing = 16.0
     let buttonx = 80.0
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                OsStatsView()
-                Spacer()
-                VStack(spacing: spacing) {
-                    Button { hasPerfs.toggle()
-                    } label: { ButtonViewText(
-                        text: "Perfs", x:buttonx, y:spacing) }
-                    Button { hasRends.toggle()
-                    } label: { ButtonViewText(
-                        text: "Rends", x:buttonx, y:spacing) }
-                }.padding()
-                //.border(Color.yellow, width: 1)
-            }//.border(Color.yellow, width: 1)
-            if hasPerfs {
-                PerfView(perfStats: perfStats,
-                         rendStats: rendStats)
-                    .border(Color.orange, width: 4)
-            } else { Spacer() }
-            if hasRends {
-                RendView(rendStats: rendStats)
-                    .border(Color.blue,   width: 4)
-            } else { Spacer() }
+        ZStack {
+            Color.black
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    OsStatsView()
+                    VStack(spacing: spacing) {
+                        Button { hasPerfs.toggle()
+                        } label: { ButtonViewText(
+                            background: colorBackPerf,
+                            text: "Perfs", x:buttonx, y:spacing) }
+                        Button { hasRends.toggle()
+                        } label: { ButtonViewText(
+                            background: colorBackRend,
+                            text: "Rends", x:buttonx, y:spacing) }
+                    }.padding()
+                    //.border(Color.yellow, width: 1)
+                    VStack(spacing: spacing) {
+                        Button { // TODO: ### hasPerfs.toggle()
+                        } label: { ButtonViewText(
+                            background: Color.gray,
+                            text: "Random", x:buttonx, y:spacing) }
+                        Button { // TODO: ### hasRends.toggle()
+                        } label: { ButtonViewText(
+                            background: Color.gray,
+                            text: "Stress", x:buttonx, y:spacing) }
+                    }.padding([.bottom, .top, .trailing], nil)
+                    //.border(Color.yellow, width: 1)
+                }//.border(Color.yellow, width: 1)
+                if hasPerfs {
+                    PerfView(perfStats: perfStats,
+                             rendStats: rendStats)
+                        .border(Color.orange, width: 4)
+                } else { Spacer() }
+                if hasRends {
+                    RendView(rendStats: rendStats)
+                        .border(Color.blue,   width: 4)
+                } else { Spacer() }
+            }
         }
-        .background(Color.black)
         //.border(Color.yellow, width: 1)
         .onAppear {
             rendStats.update(
@@ -60,13 +77,14 @@ struct AppView_Previews: PreviewProvider {
 }
 
 struct ButtonViewText: View {
-    var text: String
-    var x, y: CGFloat
+    var background: Color
+    var text:       String
+    var x, y:       CGFloat
     var body: some View { Text(text)
         .bold()
         .frame(width: x, height: y)
         .padding()
-        .background(     Color.orange)
+        .background(background)
         .foregroundColor(Color.black)
         .cornerRadius(y)
         //.border(Color.yellow, width: 1)
@@ -91,7 +109,6 @@ struct OsStatsView: View {
 struct PerfView: View {
     @ObservedObject var perfStats: PerfStats
     @ObservedObject var rendStats: RendStats
-    let colorBack = Color(red: 0.7, green: 0.7, blue: 0.6)
     let colorBar  = Color(red: 0.7, green: 0.3, blue: 0.3)
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -115,7 +132,7 @@ struct PerfView: View {
                     .foregroundStyle(colorBar)
                 }
             }
-            .background(colorBack)
+            .background(colorBackPerf)
             .onAppear {
                 rendStats.update(
                     id: "PerfView",
@@ -125,14 +142,13 @@ struct PerfView: View {
             }
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
-            ZStack { colorBack }
+            ZStack { colorBackPerf }
         }
     }
 }
 
 struct RendView: View {
     @ObservedObject var rendStats: RendStats
-    let colorBack = Color(red: 0.6, green: 0.7, blue: 0.7)
     let colorBar  = Color(red: 0.4, green: 0.4, blue: 0.8)
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -156,7 +172,7 @@ struct RendView: View {
                     .foregroundStyle(colorBar)
                 }
             }
-            .background(colorBack)
+            .background(colorBackRend)
             .onAppear {
                 rendStats.update(
                     id: "RendView",
@@ -166,7 +182,7 @@ struct RendView: View {
             }
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
-            ZStack { colorBack }
+            ZStack { colorBackRend }
         }
     }
 }
