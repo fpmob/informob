@@ -54,22 +54,33 @@ struct ViewApp: View {
                 }//.border(Color.yellow, width: 1)
                 HStack(spacing: 0) {
                     if hasPerfs {
-                        ViewPerf(statsPerf: statsPerf,
-                                 statsRend: statsRend)
+                        ViewTraced<ViewPerf>(
+                            view: ViewPerf(statsPerf: statsPerf),
+                            name: "ViewPerf",
+                            statsRend: statsRend)
                             .border(Color.orange, width: 4)
                     }
                     if hasRends {
-                        ViewRend(statsRend: statsRend)
+                        ViewTraced<ViewRend>(
+                            view: ViewRend(statsRend: statsRend),
+                            name: "ViewRend",
+                            statsRend: statsRend)
                             .border(Color.blue,   width: 4)
                     }
                 }//.border(Color.yellow, width: 1)
                 HStack(spacing: 0) {
                     if hasRandom {
-                        ViewRandom(statsRend: statsRend)
+                        ViewTraced<ViewRandom>(
+                            view: ViewRandom(),
+                            name: "ViewRandom",
+                            statsRend: statsRend)
                             .border(Color.green, width: 4)
                     }
                     if hasStress {
-                        ViewStress(statsRend: statsRend)
+                        ViewTraced<ViewStress>(
+                            view: ViewStress(),
+                            name: "ViewStress",
+                            statsRend: statsRend)
                             .border(Color.red,   width: 4)
                     }
                 }//.border(Color.yellow, width: 1)
@@ -108,6 +119,21 @@ struct ViewButtonText: View {
     }
 }
 
+struct ViewTraced<V: View>: View {
+    let view: V
+    let name: String
+    @ObservedObject var statsRend: StatsRend
+    var body: some View {
+        view.onAppear {
+            statsRend.update(
+                id: name,
+                changes: "(unknown)"
+                        // TODO: ### ViewApp._printChanges()
+            )
+        }
+    }
+}
+
 struct ViewOsStats: View {
     let osStats = OsStatsPresentKt.osStatsPresent(
         model: PlatformIosKt.platformOsStats())
@@ -125,7 +151,6 @@ struct ViewOsStats: View {
 
 struct ViewPerf: View {
     @ObservedObject var statsPerf: StatsPerf
-    @ObservedObject var statsRend: StatsRend
     let colorBar  = Color(red: 0.7, green: 0.3, blue: 0.3)
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -150,13 +175,6 @@ struct ViewPerf: View {
                 }
             }
             .background(colorBackPerf)
-            .onAppear {
-                statsRend.update(
-                    id: "ViewPerf",
-                    changes: "(unknown)"
-                        // TODO: ### ViewApp._printChanges()
-                )
-            }
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
             ZStack { colorBackPerf }
@@ -190,13 +208,6 @@ struct ViewRend: View {
                 }
             }
             .background(colorBackRend)
-            .onAppear {
-                statsRend.update(
-                    id: "ViewRend",
-                    changes: "(unknown)"
-                        // TODO: ### ViewApp._printChanges()
-                )
-            }
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
             ZStack { colorBackRend }
@@ -205,35 +216,15 @@ struct ViewRend: View {
 }
 
 struct ViewRandom: View {
-    @ObservedObject var statsRend: StatsRend
-    let osStats = OsStatsPresentKt.osStatsPresent(
-        model: PlatformIosKt.platformOsStats())
     var body: some View {
         ZStack { colorBackRandom }
         //.border(Color.yellow, width: 1)
-        .onAppear {
-            statsRend.update(
-                id: "ViewRandom",
-                changes: "(unknown)"
-                        // TODO: ### ViewApp._printChanges()
-            )
-        }
     }
 }
 
 struct ViewStress: View {
-    @ObservedObject var statsRend: StatsRend
-    let osStats = OsStatsPresentKt.osStatsPresent(
-        model: PlatformIosKt.platformOsStats())
     var body: some View {
         ZStack { colorBackStress }
         //.border(Color.yellow, width: 1)
-        .onAppear {
-            statsRend.update(
-                id: "ViewStress",
-                changes: "(unknown)"
-                        // TODO: ### ViewApp._printChanges()
-            )
-        }
     }
 }
