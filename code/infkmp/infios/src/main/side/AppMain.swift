@@ -15,10 +15,10 @@ struct AppMain: App {
     var body: some Scene {
         let statsPerf = StatsPerf()
         WindowGroup {
-            let statsRend = StatsRend()
+            let statsDraw = StatsDraw()
             ViewApp(
-                statsPerf: statsPerf,
-                statsRend: statsRend)
+                statsDraw: statsDraw,
+                statsPerf: statsPerf)
         }
     }
     var appMutant = AppMutantKt.appMutant()

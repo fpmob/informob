@@ -7,6 +7,32 @@
 
 import SwiftUI
 
+struct StatDraw: Identifiable {
+    let id:      String
+    let changes: String
+    let updates: Int
+    let seconds: Double
+}
+
+class StatsDraw: ObservableObject {
+    @Published var dict: [String:StatDraw] = [:]
+
+    init() {}
+
+    func sortedArray() -> [StatDraw] {
+        return dict.sorted { $0.0 < $1.0 } .map { $0.1 }
+    }
+
+    func update(id: String, changes: String) {
+        let stat = dict[id]
+        dict[id] = StatDraw(
+            id:      id,
+            changes: changes,
+            updates: 1 + (stat?.updates ?? 0),
+            seconds: stat?.seconds ?? 0.0)
+    }
+}
+
 struct StatPerf: Identifiable {
     let id:      String
     let max:     Int
@@ -19,32 +45,6 @@ struct StatPerf: Identifiable {
 class StatsPerf: ObservableObject {
     @Published var array: [StatPerf] = statsPerfMock()
     init() {}
-}
-
-struct StatRend: Identifiable {
-    let id:      String
-    let changes: String
-    let updates: Int
-    let seconds: Double
-}
-
-class StatsRend: ObservableObject {
-    @Published var dict: [String:StatRend] = [:]
-
-    init() {}
-
-    func sortedArray() -> [StatRend] {
-        return dict.sorted { $0.0 < $1.0 } .map { $0.1 }
-    }
-
-    func update(id: String, changes: String) {
-        let stat = dict[id]
-        dict[id] = StatRend(
-            id:      id,
-            changes: changes,
-            updates: 1 + (stat?.updates ?? 0),
-            seconds: stat?.seconds ?? 0.0)
-    }
 }
 
 func statsPerfMock() -> [StatPerf] { [

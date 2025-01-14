@@ -9,28 +9,28 @@ import SwiftUI
 import Charts // iOS 16
 import infsha
 
-let colorBackOs     = Color(red: 0.4, green: 0.4, blue: 0.7)
-let colorBackPerf   = Color(red: 0.7, green: 0.6, blue: 0.6)
-let colorBackRend   = Color(red: 0.7, green: 0.7, blue: 0.6)
+let colorBackDraw   = Color(red: 0.7, green: 0.6, blue: 0.6)
+let colorBackOs     = Color(red: 0.2, green: 0.2, blue: 0.2)
+let colorBackPerf   = Color(red: 0.7, green: 0.7, blue: 0.6)
 let colorBackRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
 let colorBackStress = Color(red: 0.6, green: 0.7, blue: 0.7)
-let colorForeOs     = Color.white
-let colorForePerf   = Color(red: 0.6, green: 0.3, blue: 0.3)
-let colorForeRend   = Color(red: 0.6, green: 0.4, blue: 0.2)
-let colorForeRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
-let colorForeStress = Color(red: 0.4, green: 0.4, blue: 0.8)
 let colorBordDebug  = Color.yellow
-let colorBordPerf   = Color(red: 0.6, green: 0.0, blue: 0.0)
-let colorBordRend   = Color(red: 0.6, green: 0.4, blue: 0.0)
+let colorBordDraw   = Color(red: 0.6, green: 0.0, blue: 0.0)
+let colorBordPerf   = Color(red: 0.6, green: 0.4, blue: 0.0)
 let colorBordRandom = Color(red: 0.0, green: 0.5, blue: 0.0)
 let colorBordStress = Color(red: 0.0, green: 0.2, blue: 0.7)
+let colorForeDraw   = Color(red: 0.6, green: 0.3, blue: 0.3)
+let colorForeOs     = Color(red: 0.7, green: 0.7, blue: 0.7)
+let colorForePerf   = Color(red: 0.6, green: 0.4, blue: 0.2)
+let colorForeRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
+let colorForeStress = Color(red: 0.4, green: 0.4, blue: 0.8)
 let widthBordPanel  = 4.0
 
 struct ViewApp: View {
+    @ObservedObject var statsDraw: StatsDraw
     @ObservedObject var statsPerf: StatsPerf
-    @ObservedObject var statsRend: StatsRend
+    @State private var hasDraws  = false
     @State private var hasPerfs  = false
-    @State private var hasRends  = false
     @State private var hasRandom = false
     @State private var hasStress = false
     let spacing = 16.0
@@ -42,10 +42,10 @@ struct ViewApp: View {
                 HStack(spacing: 0) {
                     ViewOsStats()
                     VStack(spacing: spacing) {
-                        Button { hasPerfs.toggle()
+                        Button { hasDraws.toggle()
                         } label: { ViewButtonText(
-                            background: colorBackPerf,
-                            text: "Perfs", x:buttonx, y:spacing) }
+                            background: colorBackDraw,
+                            text: "Draws", x:buttonx, y:spacing) }
                         Button { hasRandom.toggle()
                         } label: { ViewButtonText(
                             background: colorBackRandom,
@@ -53,10 +53,10 @@ struct ViewApp: View {
                     }.padding()
                     //.border(colorBordDebug, width: 1)
                     VStack(spacing: spacing) {
-                        Button { hasRends.toggle()
+                        Button { hasPerfs.toggle()
                         } label: { ViewButtonText(
-                            background: colorBackRend,
-                            text: "Rends", x:buttonx, y:spacing) }
+                            background: colorBackPerf,
+                            text: "Perfs", x:buttonx, y:spacing) }
                         Button { hasStress.toggle()
                         } label: { ViewButtonText(
                             background: colorBackStress,
@@ -65,19 +65,19 @@ struct ViewApp: View {
                     //.border(colorBordDebug, width: 1)
                 }//.border(colorBordDebug, width: 1)
                 HStack(spacing: 0) {
-                    if hasPerfs {
-                        ViewTraced<ViewPerf>(
-                            view: ViewPerf(statsPerf: statsPerf),
-                            name: "ViewPerf",
-                            statsRend: statsRend)
-                            .border(colorBordPerf, width: widthBordPanel)
+                    if hasDraws {
+                        ViewTraced<ViewDraws>(
+                            view: ViewDraws(statsDraw: statsDraw),
+                            name: "ViewDraws",
+                            statsDraw: statsDraw)
+                            .border(colorBordDraw, width: widthBordPanel)
                     }
-                    if hasRends {
-                        ViewTraced<ViewRend>(
-                            view: ViewRend(statsRend: statsRend),
-                            name: "ViewRend",
-                            statsRend: statsRend)
-                            .border(colorBordRend, width: widthBordPanel)
+                    if hasPerfs {
+                        ViewTraced<ViewPerfs>(
+                            view: ViewPerfs(statsPerf: statsPerf),
+                            name: "ViewPerfs",
+                            statsDraw: statsDraw)
+                            .border(colorBordPerf, width: widthBordPanel)
                     }
                 }//.border(colorBordDebug, width: 1)
                 HStack(spacing: 0) {
@@ -85,14 +85,14 @@ struct ViewApp: View {
                         ViewTraced<ViewRandom>(
                             view: ViewRandom(),
                             name: "ViewRandom",
-                            statsRend: statsRend)
+                            statsDraw: statsDraw)
                             .border(colorBordRandom, width: widthBordPanel)
                     }
                     if hasStress {
                         ViewTraced<ViewStress>(
                             view: ViewStress(),
                             name: "ViewStress",
-                            statsRend: statsRend)
+                            statsDraw: statsDraw)
                             .border(colorBordStress, width: widthBordPanel)
                     }
                 }//.border(colorBordDebug, width: 1)
@@ -101,7 +101,7 @@ struct ViewApp: View {
         }
         //.border(colorBordDebug, width: 1)
         .onAppear {
-            statsRend.update(
+            statsDraw.update(
                 id: "ViewApp",
                 changes: "(unknown)"
                     // TODO: ### ViewApp._printChanges()
@@ -112,8 +112,8 @@ struct ViewApp: View {
 
 struct ViewApp_Previews: PreviewProvider {
 	static var previews: some View {
-        ViewApp(statsPerf: StatsPerf(),
-                statsRend: StatsRend()) }
+        ViewApp(statsDraw: StatsDraw(),
+                statsPerf: StatsPerf()) }
 }
 
 struct ViewButtonText: View {
@@ -134,10 +134,10 @@ struct ViewButtonText: View {
 struct ViewTraced<V: View>: View {
     let view: V
     let name: String
-    @ObservedObject var statsRend: StatsRend
+    @ObservedObject var statsDraw: StatsDraw
     var body: some View {
         view.onAppear {
-            statsRend.update(
+            statsDraw.update(
                 id: name,
                 changes: "(unknown)"
                         // TODO: ### ViewApp._printChanges()
@@ -161,7 +161,7 @@ struct ViewOsStats: View {
     }
 }
 
-struct ViewPerf: View {
+struct ViewPerfs: View {
     @ObservedObject var statsPerf: StatsPerf
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -193,16 +193,16 @@ struct ViewPerf: View {
     }
 }
 
-struct ViewRend: View {
-    @ObservedObject var statsRend: StatsRend
+struct ViewDraws: View {
+    @ObservedObject var statsDraw: StatsDraw
     var body: some View {
         if #available(iOS 16.0, *) {
-            Chart(statsRend.sortedArray()) {
+            Chart(statsDraw.sortedArray()) {
                 BarMark(
                     x: .value("up", $0.updates),
                     y: .value("id", "    \($0.id) \($0.updates)")
                 )
-                .foregroundStyle(colorForeRend
+                .foregroundStyle(colorForeDraw
                     .blendMode(.difference))
                     //.blendMode(.destinationOver))
                 //.opacity(0.5)
@@ -214,13 +214,13 @@ struct ViewRend: View {
                 AxisMarks(preset: .inset) {
                     AxisValueLabel(centered: true)
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(colorForeRend)
+                    .foregroundStyle(colorForeDraw)
                 }
             }
-            .background(colorBackRend)
+            .background(colorBackDraw)
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
-            ZStack { colorBackRend }
+            ZStack { colorBackDraw }
         }
     }
 }
