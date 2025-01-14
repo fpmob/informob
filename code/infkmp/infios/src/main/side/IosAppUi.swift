@@ -9,10 +9,22 @@ import SwiftUI
 import Charts // iOS 16
 import infsha
 
-let colorBackPerf   = Color(red: 0.7, green: 0.7, blue: 0.6)
-let colorBackRend   = Color(red: 0.6, green: 0.7, blue: 0.7)
+let colorBackOs     = Color(red: 0.4, green: 0.4, blue: 0.7)
+let colorBackPerf   = Color(red: 0.7, green: 0.6, blue: 0.6)
+let colorBackRend   = Color(red: 0.7, green: 0.7, blue: 0.6)
 let colorBackRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
-let colorBackStress = Color(red: 0.7, green: 0.6, blue: 0.6)
+let colorBackStress = Color(red: 0.6, green: 0.7, blue: 0.7)
+let colorForeOs     = Color.white
+let colorForePerf   = Color(red: 0.6, green: 0.3, blue: 0.3)
+let colorForeRend   = Color(red: 0.6, green: 0.4, blue: 0.2)
+let colorForeRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
+let colorForeStress = Color(red: 0.4, green: 0.4, blue: 0.8)
+let colorBordDebug  = Color.yellow
+let colorBordPerf   = Color(red: 0.6, green: 0.0, blue: 0.0)
+let colorBordRend   = Color(red: 0.6, green: 0.4, blue: 0.0)
+let colorBordRandom = Color(red: 0.0, green: 0.5, blue: 0.0)
+let colorBordStress = Color(red: 0.0, green: 0.2, blue: 0.7)
+let widthBordPanel  = 4.0
 
 struct ViewApp: View {
     @ObservedObject var statsPerf: StatsPerf
@@ -39,7 +51,7 @@ struct ViewApp: View {
                             background: colorBackRandom,
                             text: "Random", x:buttonx, y:spacing) }
                     }.padding()
-                    //.border(Color.yellow, width: 1)
+                    //.border(colorBordDebug, width: 1)
                     VStack(spacing: spacing) {
                         Button { hasRends.toggle()
                         } label: { ViewButtonText(
@@ -50,44 +62,44 @@ struct ViewApp: View {
                             background: colorBackStress,
                             text: "Stress", x:buttonx, y:spacing) }
                     }.padding([.bottom, .top, .trailing], nil)
-                    //.border(Color.yellow, width: 1)
-                }//.border(Color.yellow, width: 1)
+                    //.border(colorBordDebug, width: 1)
+                }//.border(colorBordDebug, width: 1)
                 HStack(spacing: 0) {
                     if hasPerfs {
                         ViewTraced<ViewPerf>(
                             view: ViewPerf(statsPerf: statsPerf),
                             name: "ViewPerf",
                             statsRend: statsRend)
-                            .border(Color.orange, width: 4)
+                            .border(colorBordPerf, width: widthBordPanel)
                     }
                     if hasRends {
                         ViewTraced<ViewRend>(
                             view: ViewRend(statsRend: statsRend),
                             name: "ViewRend",
                             statsRend: statsRend)
-                            .border(Color.blue,   width: 4)
+                            .border(colorBordRend, width: widthBordPanel)
                     }
-                }//.border(Color.yellow, width: 1)
+                }//.border(colorBordDebug, width: 1)
                 HStack(spacing: 0) {
                     if hasRandom {
                         ViewTraced<ViewRandom>(
                             view: ViewRandom(),
                             name: "ViewRandom",
                             statsRend: statsRend)
-                            .border(Color.green, width: 4)
+                            .border(colorBordRandom, width: widthBordPanel)
                     }
                     if hasStress {
                         ViewTraced<ViewStress>(
                             view: ViewStress(),
                             name: "ViewStress",
                             statsRend: statsRend)
-                            .border(Color.red,   width: 4)
+                            .border(colorBordStress, width: widthBordPanel)
                     }
-                }//.border(Color.yellow, width: 1)
+                }//.border(colorBordDebug, width: 1)
                 Spacer()
             }
         }
-        //.border(Color.yellow, width: 1)
+        //.border(colorBordDebug, width: 1)
         .onAppear {
             statsRend.update(
                 id: "ViewApp",
@@ -115,7 +127,7 @@ struct ViewButtonText: View {
         .background(background)
         .foregroundColor(Color.black)
         .cornerRadius(y)
-        //.border(Color.yellow, width: 1)
+        //.border(colorBordDebug, width: 1)
     }
 }
 
@@ -143,15 +155,14 @@ struct ViewOsStats: View {
             Text(osStats.version).font(.title)
         }
         .padding()
-        .background(Color.purple)
-        .foregroundColor(Color.white)
-        //.border(Color.yellow, width: 1)
+        .background(colorBackOs)
+        .foregroundColor(colorForeOs)
+        //.border(colorBordDebug, width: 1)
     }
 }
 
 struct ViewPerf: View {
     @ObservedObject var statsPerf: StatsPerf
-    let colorBar  = Color(red: 0.7, green: 0.3, blue: 0.3)
     var body: some View {
         if #available(iOS 16.0, *) {
             Chart(statsPerf.array) {
@@ -159,7 +170,7 @@ struct ViewPerf: View {
                     x: .value("%", $0.percent),
                     y: .value("?", "    \($0.value) of \($0.max) \($0.id)")
                 )
-                .foregroundStyle(colorBar
+                .foregroundStyle(colorForePerf
                     .blendMode(.difference))
                     //.blendMode(.destinationOver))
                 //.opacity(0.5)
@@ -171,7 +182,7 @@ struct ViewPerf: View {
                 AxisMarks(preset: .inset) {
                     AxisValueLabel(centered: true)
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(colorBar)
+                    .foregroundStyle(colorForePerf)
                 }
             }
             .background(colorBackPerf)
@@ -184,7 +195,6 @@ struct ViewPerf: View {
 
 struct ViewRend: View {
     @ObservedObject var statsRend: StatsRend
-    let colorBar  = Color(red: 0.4, green: 0.4, blue: 0.8)
     var body: some View {
         if #available(iOS 16.0, *) {
             Chart(statsRend.sortedArray()) {
@@ -192,7 +202,7 @@ struct ViewRend: View {
                     x: .value("up", $0.updates),
                     y: .value("id", "    \($0.id) \($0.updates)")
                 )
-                .foregroundStyle(colorBar
+                .foregroundStyle(colorForeRend
                     .blendMode(.difference))
                     //.blendMode(.destinationOver))
                 //.opacity(0.5)
@@ -204,7 +214,7 @@ struct ViewRend: View {
                 AxisMarks(preset: .inset) {
                     AxisValueLabel(centered: true)
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(colorBar)
+                    .foregroundStyle(colorForeRend)
                 }
             }
             .background(colorBackRend)
@@ -218,13 +228,13 @@ struct ViewRend: View {
 struct ViewRandom: View {
     var body: some View {
         ZStack { colorBackRandom }
-        //.border(Color.yellow, width: 1)
+        //.border(colorBordDebug, width: 1)
     }
 }
 
 struct ViewStress: View {
     var body: some View {
         ZStack { colorBackStress }
-        //.border(Color.yellow, width: 1)
+        //.border(colorBordDebug, width: 1)
     }
 }
