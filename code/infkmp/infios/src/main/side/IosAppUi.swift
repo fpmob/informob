@@ -9,14 +9,18 @@ import SwiftUI
 import Charts // iOS 16
 import infsha
 
-let colorBackPerf = Color(red: 0.7, green: 0.7, blue: 0.6)
-let colorBackRend = Color(red: 0.6, green: 0.7, blue: 0.7)
+let colorBackPerf   = Color(red: 0.7, green: 0.7, blue: 0.6)
+let colorBackRend   = Color(red: 0.6, green: 0.7, blue: 0.7)
+let colorBackRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
+let colorBackStress = Color(red: 0.7, green: 0.6, blue: 0.6)
 
 struct AppView: View {
     @ObservedObject var perfStats: PerfStats
     @ObservedObject var rendStats: RendStats
-    @State private var hasPerfs = false
-    @State private var hasRends = false
+    @State private var hasPerfs  = false
+    @State private var hasRends  = false
+    @State private var hasRandom = false
+    @State private var hasStress = false
     let spacing = 16.0
     let buttonx = 80.0
     var body: some View {
@@ -30,33 +34,46 @@ struct AppView: View {
                         } label: { ButtonViewText(
                             background: colorBackPerf,
                             text: "Perfs", x:buttonx, y:spacing) }
+                        Button { hasRandom.toggle()
+                        } label: { ButtonViewText(
+                            background: colorBackRandom,
+                            text: "Random", x:buttonx, y:spacing) }
+                    }.padding()
+                    //.border(Color.yellow, width: 1)
+                    VStack(spacing: spacing) {
                         Button { hasRends.toggle()
                         } label: { ButtonViewText(
                             background: colorBackRend,
                             text: "Rends", x:buttonx, y:spacing) }
-                    }.padding()
-                    //.border(Color.yellow, width: 1)
-                    VStack(spacing: spacing) {
-                        Button { // TODO: ### hasPerfs.toggle()
+                        Button { hasStress.toggle()
                         } label: { ButtonViewText(
-                            background: Color.gray,
-                            text: "Random", x:buttonx, y:spacing) }
-                        Button { // TODO: ### hasRends.toggle()
-                        } label: { ButtonViewText(
-                            background: Color.gray,
+                            background: colorBackStress,
                             text: "Stress", x:buttonx, y:spacing) }
                     }.padding([.bottom, .top, .trailing], nil)
                     //.border(Color.yellow, width: 1)
                 }//.border(Color.yellow, width: 1)
-                if hasPerfs {
-                    PerfView(perfStats: perfStats,
-                             rendStats: rendStats)
-                        .border(Color.orange, width: 4)
-                } else { Spacer() }
-                if hasRends {
-                    RendView(rendStats: rendStats)
-                        .border(Color.blue,   width: 4)
-                } else { Spacer() }
+                HStack(spacing: 0) {
+                    if hasPerfs {
+                        PerfView(perfStats: perfStats,
+                                 rendStats: rendStats)
+                            .border(Color.orange, width: 4)
+                    }
+                    if hasRends {
+                        RendView(rendStats: rendStats)
+                            .border(Color.blue,   width: 4)
+                    }
+                }//.border(Color.yellow, width: 1)
+                HStack(spacing: 0) {
+                    if hasRandom {
+                        RandomView(rendStats: rendStats)
+                            .border(Color.green, width: 4)
+                    }
+                    if hasStress {
+                        StressView(rendStats: rendStats)
+                            .border(Color.red,   width: 4)
+                    }
+                }//.border(Color.yellow, width: 1)
+                Spacer()
             }
         }
         //.border(Color.yellow, width: 1)
@@ -183,6 +200,40 @@ struct RendView: View {
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
             ZStack { colorBackRend }
+        }
+    }
+}
+
+struct RandomView: View {
+    @ObservedObject var rendStats: RendStats
+    let osStats = OsStatsPresentKt.osStatsPresent(
+        model: PlatformIosKt.platformOsStats())
+    var body: some View {
+        ZStack { colorBackRandom }
+        //.border(Color.yellow, width: 1)
+        .onAppear {
+            rendStats.update(
+                id: "RandomView",
+                changes: "(unknown)"
+                        // TODO: ### AppView._printChanges()
+            )
+        }
+    }
+}
+
+struct StressView: View {
+    @ObservedObject var rendStats: RendStats
+    let osStats = OsStatsPresentKt.osStatsPresent(
+        model: PlatformIosKt.platformOsStats())
+    var body: some View {
+        ZStack { colorBackStress }
+        //.border(Color.yellow, width: 1)
+        .onAppear {
+            rendStats.update(
+                id: "StressView",
+                changes: "(unknown)"
+                        // TODO: ### AppView._printChanges()
+            )
         }
     }
 }
