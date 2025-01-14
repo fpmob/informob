@@ -1,4 +1,4 @@
-// Copyright © 2022 - 2024 Christopher Augustus
+// Copyright © 2022 - 2025 Christopher Augustus
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,9 +14,9 @@ let colorBackRend   = Color(red: 0.6, green: 0.7, blue: 0.7)
 let colorBackRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
 let colorBackStress = Color(red: 0.7, green: 0.6, blue: 0.6)
 
-struct AppView: View {
-    @ObservedObject var perfStats: PerfStats
-    @ObservedObject var rendStats: RendStats
+struct ViewApp: View {
+    @ObservedObject var statsPerf: StatsPerf
+    @ObservedObject var statsRend: StatsRend
     @State private var hasPerfs  = false
     @State private var hasRends  = false
     @State private var hasRandom = false
@@ -28,25 +28,25 @@ struct AppView: View {
             Color.black
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
-                    OsStatsView()
+                    ViewOsStats()
                     VStack(spacing: spacing) {
                         Button { hasPerfs.toggle()
-                        } label: { ButtonViewText(
+                        } label: { ViewButtonText(
                             background: colorBackPerf,
                             text: "Perfs", x:buttonx, y:spacing) }
                         Button { hasRandom.toggle()
-                        } label: { ButtonViewText(
+                        } label: { ViewButtonText(
                             background: colorBackRandom,
                             text: "Random", x:buttonx, y:spacing) }
                     }.padding()
                     //.border(Color.yellow, width: 1)
                     VStack(spacing: spacing) {
                         Button { hasRends.toggle()
-                        } label: { ButtonViewText(
+                        } label: { ViewButtonText(
                             background: colorBackRend,
                             text: "Rends", x:buttonx, y:spacing) }
                         Button { hasStress.toggle()
-                        } label: { ButtonViewText(
+                        } label: { ViewButtonText(
                             background: colorBackStress,
                             text: "Stress", x:buttonx, y:spacing) }
                     }.padding([.bottom, .top, .trailing], nil)
@@ -54,22 +54,22 @@ struct AppView: View {
                 }//.border(Color.yellow, width: 1)
                 HStack(spacing: 0) {
                     if hasPerfs {
-                        PerfView(perfStats: perfStats,
-                                 rendStats: rendStats)
+                        ViewPerf(statsPerf: statsPerf,
+                                 statsRend: statsRend)
                             .border(Color.orange, width: 4)
                     }
                     if hasRends {
-                        RendView(rendStats: rendStats)
+                        ViewRend(statsRend: statsRend)
                             .border(Color.blue,   width: 4)
                     }
                 }//.border(Color.yellow, width: 1)
                 HStack(spacing: 0) {
                     if hasRandom {
-                        RandomView(rendStats: rendStats)
+                        ViewRandom(statsRend: statsRend)
                             .border(Color.green, width: 4)
                     }
                     if hasStress {
-                        StressView(rendStats: rendStats)
+                        ViewStress(statsRend: statsRend)
                             .border(Color.red,   width: 4)
                     }
                 }//.border(Color.yellow, width: 1)
@@ -78,22 +78,22 @@ struct AppView: View {
         }
         //.border(Color.yellow, width: 1)
         .onAppear {
-            rendStats.update(
-                id: "AppView",
+            statsRend.update(
+                id: "ViewApp",
                 changes: "(unknown)"
-                    // TODO: ### AppView._printChanges()
+                    // TODO: ### ViewApp._printChanges()
             )
         }
     }
 }
 
-struct AppView_Previews: PreviewProvider {
+struct ViewApp_Previews: PreviewProvider {
 	static var previews: some View {
-        AppView(perfStats: PerfStats(),
-                rendStats: RendStats()) }
+        ViewApp(statsPerf: StatsPerf(),
+                statsRend: StatsRend()) }
 }
 
-struct ButtonViewText: View {
+struct ViewButtonText: View {
     var background: Color
     var text:       String
     var x, y:       CGFloat
@@ -108,7 +108,7 @@ struct ButtonViewText: View {
     }
 }
 
-struct OsStatsView: View {
+struct ViewOsStats: View {
     let osStats = OsStatsPresentKt.osStatsPresent(
         model: PlatformIosKt.platformOsStats())
     var body: some View {
@@ -123,13 +123,13 @@ struct OsStatsView: View {
     }
 }
 
-struct PerfView: View {
-    @ObservedObject var perfStats: PerfStats
-    @ObservedObject var rendStats: RendStats
+struct ViewPerf: View {
+    @ObservedObject var statsPerf: StatsPerf
+    @ObservedObject var statsRend: StatsRend
     let colorBar  = Color(red: 0.7, green: 0.3, blue: 0.3)
     var body: some View {
         if #available(iOS 16.0, *) {
-            Chart(perfStats.array) {
+            Chart(statsPerf.array) {
                 BarMark(
                     x: .value("%", $0.percent),
                     y: .value("?", "    \($0.value) of \($0.max) \($0.id)")
@@ -151,10 +151,10 @@ struct PerfView: View {
             }
             .background(colorBackPerf)
             .onAppear {
-                rendStats.update(
-                    id: "PerfView",
+                statsRend.update(
+                    id: "ViewPerf",
                     changes: "(unknown)"
-                        // TODO: ### AppView._printChanges()
+                        // TODO: ### ViewApp._printChanges()
                 )
             }
         } else {
@@ -164,12 +164,12 @@ struct PerfView: View {
     }
 }
 
-struct RendView: View {
-    @ObservedObject var rendStats: RendStats
+struct ViewRend: View {
+    @ObservedObject var statsRend: StatsRend
     let colorBar  = Color(red: 0.4, green: 0.4, blue: 0.8)
     var body: some View {
         if #available(iOS 16.0, *) {
-            Chart(rendStats.sortedArray()) {
+            Chart(statsRend.sortedArray()) {
                 BarMark(
                     x: .value("up", $0.updates),
                     y: .value("id", "    \($0.id) \($0.updates)")
@@ -191,10 +191,10 @@ struct RendView: View {
             }
             .background(colorBackRend)
             .onAppear {
-                rendStats.update(
-                    id: "RendView",
+                statsRend.update(
+                    id: "ViewRend",
                     changes: "(unknown)"
-                        // TODO: ### AppView._printChanges()
+                        // TODO: ### ViewApp._printChanges()
                 )
             }
         } else {
@@ -204,35 +204,35 @@ struct RendView: View {
     }
 }
 
-struct RandomView: View {
-    @ObservedObject var rendStats: RendStats
+struct ViewRandom: View {
+    @ObservedObject var statsRend: StatsRend
     let osStats = OsStatsPresentKt.osStatsPresent(
         model: PlatformIosKt.platformOsStats())
     var body: some View {
         ZStack { colorBackRandom }
         //.border(Color.yellow, width: 1)
         .onAppear {
-            rendStats.update(
-                id: "RandomView",
+            statsRend.update(
+                id: "ViewRandom",
                 changes: "(unknown)"
-                        // TODO: ### AppView._printChanges()
+                        // TODO: ### ViewApp._printChanges()
             )
         }
     }
 }
 
-struct StressView: View {
-    @ObservedObject var rendStats: RendStats
+struct ViewStress: View {
+    @ObservedObject var statsRend: StatsRend
     let osStats = OsStatsPresentKt.osStatsPresent(
         model: PlatformIosKt.platformOsStats())
     var body: some View {
         ZStack { colorBackStress }
         //.border(Color.yellow, width: 1)
         .onAppear {
-            rendStats.update(
-                id: "StressView",
+            statsRend.update(
+                id: "ViewStress",
                 changes: "(unknown)"
-                        // TODO: ### AppView._printChanges()
+                        // TODO: ### ViewApp._printChanges()
             )
         }
     }

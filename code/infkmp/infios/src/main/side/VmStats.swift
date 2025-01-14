@@ -1,4 +1,4 @@
-// Copyright © 2022 - 2024 Christopher Augustus
+// Copyright © 2022 - 2025 Christopher Augustus
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PerfStat: Identifiable {
+struct StatPerf: Identifiable {
     let id:      String
     let max:     Int
     let value:   Int
@@ -16,30 +16,30 @@ struct PerfStat: Identifiable {
     }
 }
 
-class PerfStats: ObservableObject {
-    @Published var array: [PerfStat] = mockPerfStats()
+class StatsPerf: ObservableObject {
+    @Published var array: [StatPerf] = statsPerfMock()
     init() {}
 }
 
-struct RendStat: Identifiable {
+struct StatRend: Identifiable {
     let id:      String
     let changes: String
     let updates: Int
     let seconds: Double
 }
 
-class RendStats: ObservableObject {
-    @Published var dict: [String:RendStat] = [:]
+class StatsRend: ObservableObject {
+    @Published var dict: [String:StatRend] = [:]
 
     init() {}
 
-    func sortedArray() -> [RendStat] {
+    func sortedArray() -> [StatRend] {
         return dict.sorted { $0.0 < $1.0 } .map { $0.1 }
     }
 
     func update(id: String, changes: String) {
         let stat = dict[id]
-        dict[id] = RendStat(
+        dict[id] = StatRend(
             id:      id,
             changes: changes,
             updates: 1 + (stat?.updates ?? 0),
@@ -47,7 +47,7 @@ class RendStats: ObservableObject {
     }
 }
 
-func mockPerfStats() -> [PerfStat] { [
+func statsPerfMock() -> [StatPerf] { [
     .init(id: "cores",   max:  64, value:  8),
     .init(id: "threads", max: 100, value: 30),
     .init(id: "queues",  max: 100, value: 60),

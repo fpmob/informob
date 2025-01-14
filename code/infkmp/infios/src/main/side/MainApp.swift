@@ -1,4 +1,4 @@
-// Copyright © 2022 - 2024 Christopher Augustus
+// Copyright © 2022 - 2025 Christopher Augustus
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,12 +13,12 @@ import infsha
 struct MainApp: App {
     // TODO: @@@ REFACTOR COMPOSE UI CODE TO iosAppPlatformFunctions.presentMainScreen(...)
     var body: some Scene {
-        let perfStats = PerfStats()
+        let statsPerf = StatsPerf()
         WindowGroup {
-            let rendStats = RendStats()
-            AppView(
-                perfStats: perfStats,
-                rendStats: rendStats)
+            let statsRend = StatsRend()
+            ViewApp(
+                statsPerf: statsPerf,
+                statsRend: statsRend)
         }
     }
     var appMutant = AppMutantKt.appMutant()
