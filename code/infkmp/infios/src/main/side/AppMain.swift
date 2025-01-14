@@ -10,7 +10,7 @@ import SwiftUI
 import infsha
 
 @main
-struct MainApp: App {
+struct AppMain: App {
     // TODO: @@@ REFACTOR COMPOSE UI CODE TO iosAppPlatformFunctions.presentMainScreen(...)
     var body: some Scene {
         let statsPerf = StatsPerf()
