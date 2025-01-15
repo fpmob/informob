@@ -29,13 +29,18 @@ let widthBordPanel  = 4.0
 struct ViewApp: View {
     @ObservedObject var statsDraw: StatsDraw
     @ObservedObject var statsPerf: StatsPerf
+
+    private var procIncDraws: (String) -> ()
     @State private var hasDraws  = false
     @State private var hasPerfs  = false
     @State private var hasRandom = false
     @State private var hasStress = false
     let spacing = 16.0
     let buttonx = 80.0
+
     var body: some View {
+        // TODO: ### REDRAW CYCLE
+        //let _ = procIncDraws("ViewApp")
         ZStack {
             Color.black
             VStack(spacing: 0) {
@@ -66,46 +71,49 @@ struct ViewApp: View {
                 }//.border(colorBordDebug, width: 1)
                 HStack(spacing: 0) {
                     if hasDraws {
-                        ViewTraced<ViewDraws>(
-                            view: ViewDraws(statsDraw: statsDraw),
-                            name: "ViewDraws",
+                        ViewDraws(
+                            procIncDraws: procIncDraws,
                             statsDraw: statsDraw)
-                            .border(colorBordDraw, width: widthBordPanel)
+                        .border(colorBordDraw, width: widthBordPanel)
                     }
                     if hasPerfs {
-                        ViewTraced<ViewPerfs>(
-                            view: ViewPerfs(statsPerf: statsPerf),
-                            name: "ViewPerfs",
-                            statsDraw: statsDraw)
-                            .border(colorBordPerf, width: widthBordPanel)
+                        ViewPerfs(
+                            procIncDraws: procIncDraws,
+                            statsPerf: statsPerf)
+                        .border(colorBordPerf, width: widthBordPanel)
                     }
                 }//.border(colorBordDebug, width: 1)
                 HStack(spacing: 0) {
                     if hasRandom {
-                        ViewTraced<ViewRandom>(
-                            view: ViewRandom(),
-                            name: "ViewRandom",
-                            statsDraw: statsDraw)
-                            .border(colorBordRandom, width: widthBordPanel)
+                        ViewRandom(
+                            procIncDraws: procIncDraws)
+                        .border(colorBordRandom, width: widthBordPanel)
                     }
                     if hasStress {
-                        ViewTraced<ViewStress>(
-                            view: ViewStress(),
-                            name: "ViewStress",
-                            statsDraw: statsDraw)
-                            .border(colorBordStress, width: widthBordPanel)
+                        ViewStress(
+                            procIncDraws: procIncDraws)
+                        .border(colorBordStress, width: widthBordPanel)
                     }
                 }//.border(colorBordDebug, width: 1)
                 Spacer()
             }
         }
         //.border(colorBordDebug, width: 1)
-        .onAppear {
-            statsDraw.update(
-                id: "ViewApp",
-                changes: "(unknown)"
+    }
+    init(
+        statsDraw: StatsDraw,
+        statsPerf: StatsPerf
+    ) {
+        self.statsDraw = statsDraw
+        self.statsPerf = statsPerf
+        self.procIncDraws = { name in
+            Task { await MainActor.run {
+                statsDraw.update(
+                    id: name,
+                    changes: "(unknown)"
                     // TODO: ### ViewApp._printChanges()
-            )
+                )
+            }}
         }
     }
 }
@@ -131,21 +139,6 @@ struct ViewButtonText: View {
     }
 }
 
-struct ViewTraced<V: View>: View {
-    let view: V
-    let name: String
-    @ObservedObject var statsDraw: StatsDraw
-    var body: some View {
-        view.onAppear {
-            statsDraw.update(
-                id: name,
-                changes: "(unknown)"
-                        // TODO: ### ViewApp._printChanges()
-            )
-        }
-    }
-}
-
 struct ViewOsStats: View {
     let osStats = OsStatsPresentKt.osStatsPresent(
         model: PlatformIosKt.platformOsStats())
@@ -162,8 +155,10 @@ struct ViewOsStats: View {
 }
 
 struct ViewPerfs: View {
+    let procIncDraws: (String) -> ()
     @ObservedObject var statsPerf: StatsPerf
     var body: some View {
+        let _ = procIncDraws("ViewPerfs")
         if #available(iOS 16.0, *) {
             Chart(statsPerf.array) {
                 BarMark(
@@ -194,8 +189,11 @@ struct ViewPerfs: View {
 }
 
 struct ViewDraws: View {
+    let procIncDraws: (String) -> ()
     @ObservedObject var statsDraw: StatsDraw
     var body: some View {
+        // TODO: ### REDRAW CYCLE
+        //let _ = procIncDraws("ViewDraws")
         if #available(iOS 16.0, *) {
             Chart(statsDraw.sortedArray()) {
                 BarMark(
@@ -226,12 +224,14 @@ struct ViewDraws: View {
 }
 
 struct ViewRandom: View {
+    let procIncDraws: (String) -> ()
     @State private var countRedrawn = 0
     var body: some View {
+        let _ = procIncDraws("ViewRandom")
         ZStack {
             colorBackRandom
             ViewRandomized(depth: 0,
-                procIncDraws: { name in /* ### TODO */},
+                procIncDraws: procIncDraws,
                 countRedrawn: $countRedrawn)
         }
     }
@@ -279,7 +279,9 @@ struct ViewRandomized: View {
 }
 
 struct ViewStress: View {
+    let procIncDraws: (String) -> ()
     var body: some View {
+        let _ = procIncDraws("ViewStress")
         ZStack { colorBackStress }
         //.border(colorBordDebug, width: 1)
     }
