@@ -226,9 +226,55 @@ struct ViewDraws: View {
 }
 
 struct ViewRandom: View {
+    @State private var countRedrawn = 0
     var body: some View {
-        ZStack { colorBackRandom }
-        //.border(colorBordDebug, width: 1)
+        ZStack {
+            colorBackRandom
+            ViewRandomized(depth: 0,
+                procIncDraws: { name in /* ### TODO */},
+                countRedrawn: $countRedrawn)
+        }
+    }
+}
+
+struct ViewRandomized: View {
+    let depth: Int
+    let procIncDraws: (String) -> ()
+    @Binding var countRedrawn: Int
+    private let count = Int.random(in: 1...3)
+    var body: some View {
+        let _ = procIncDraws("ViewRandomized")
+        if (depth <= 0) {
+            let _ = procIncDraws("random Button")
+            Button { countRedrawn += 1 }
+            label: { Text("\(countRedrawn)")
+                .padding(8)
+                .background(Color.white)
+                .foregroundColor(Color.black)
+                .cornerRadius(40)
+            }
+        } else {
+            let recurse = {
+                ViewRandomized(
+                    depth: depth - 1,
+                    procIncDraws: procIncDraws,
+                    countRedrawn: $countRedrawn)
+            }
+            ForEach(1..<count, id: \.self) { _ in
+                switch Int.random(in: 1...2) {
+                    case 1 :
+                        let _ = procIncDraws("random HStack")
+                        HStack { recurse()
+                        }.border(Color.white)
+                    case 2 :
+                        let _ = procIncDraws("random VStack")
+                        VStack { recurse()
+                        }.border(Color.white)
+                    default : ZStack { Color.red }
+                        // !!! should never occur
+                }
+            }
+        }
     }
 }
 
