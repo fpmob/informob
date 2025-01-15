@@ -225,54 +225,71 @@ struct ViewDraws: View {
 
 struct ViewRandom: View {
     let procIncDraws: (String) -> ()
-    @State private var countRedrawn = 0
+    @State private var countPressed = 0
+    @State private var countRandomized = 0
     var body: some View {
         let _ = procIncDraws("ViewRandom")
-        ZStack {
-            colorBackRandom
-            ViewRandomized(depth: 0,
+        ScrollView([.horizontal, .vertical]) {
+            ViewRandomized(depth: 3,
                 procIncDraws: procIncDraws,
-                countRedrawn: $countRedrawn)
+                countPressed: $countPressed,
+                countRandomized: $countRandomized)
         }
+        .background(colorBackRandom)
+        //.defaultScrollAnchor(.center) !!! iOS 17
     }
 }
 
 struct ViewRandomized: View {
     let depth: Int
     let procIncDraws: (String) -> ()
-    @Binding var countRedrawn: Int
-    private let count = Int.random(in: 1...3)
+    @Binding var countPressed: Int
+    @Binding var countRandomized: Int
     var body: some View {
-        let _ = procIncDraws("ViewRandomized")
+        let _ = procIncDraws("random \(depth) depth")
         if (depth <= 0) {
-            let _ = procIncDraws("random Button")
-            Button { countRedrawn += 1 }
-            label: { Text("\(countRedrawn)")
-                .padding(8)
+            Button { countPressed += 1 }
+            label: {
+                let _ = procIncDraws("random Button P")
+                Text("\(countPressed)")
+                .padding(12)
                 .background(Color.white)
                 .foregroundColor(Color.black)
-                .cornerRadius(40)
+                .cornerRadius(48)
             }
-        } else {
+            Button { countRandomized += 1 }
+            label: {
+                let _ = procIncDraws("random Button R")
+                Text("\(countRandomized)")
+                .padding(12)
+                .background(Color.black)
+                .foregroundColor(Color.white)
+                .cornerRadius(48)
+            }
+        } else if countRandomized >= 0 { // !!! trigger redraws
             let recurse = {
                 ViewRandomized(
                     depth: depth - 1,
                     procIncDraws: procIncDraws,
-                    countRedrawn: $countRedrawn)
+                    countPressed: $countPressed,
+                    countRandomized: $countRandomized)
             }
-            ForEach(1..<count, id: \.self) { _ in
-                switch Int.random(in: 1...2) {
-                    case 1 :
-                        let _ = procIncDraws("random HStack")
-                        HStack { recurse()
-                        }.border(Color.white)
-                    case 2 :
-                        let _ = procIncDraws("random VStack")
-                        VStack { recurse()
-                        }.border(Color.white)
-                    default : ZStack { Color.red }
+            let count = Int.random(in: 1...3)
+            switch Int.random(in: 1...2) {
+                case 1 :
+                    let _ = procIncDraws("random HStack")
+                    HStack {
+                        ForEach(1...count, id: \.self)
+                            { _ in recurse() }
+                    }.padding(8).border(Color.red, width: 4)
+                case 2 :
+                    let _ = procIncDraws("random VStack")
+                    VStack {
+                        ForEach(1...count, id: \.self)
+                            { _ in recurse() }
+                    }.padding(8).border(Color.blue, width: 4)
+                default : ZStack { Color.red }
                         // !!! should never occur
-                }
             }
         }
     }
