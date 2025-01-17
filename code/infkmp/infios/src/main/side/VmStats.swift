@@ -19,6 +19,8 @@ class StatsDraw: ObservableObject {
 
     init() {}
 
+    func reset() { dict = [:] }
+
     func sortedArray() -> [StatDraw] {
         return dict.sorted { $0.0 < $1.0 } .map { $0.1 }
     }
