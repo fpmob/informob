@@ -10,13 +10,13 @@ import SwiftUI
 import infsha
 
 @main
-struct AppMain: App {
+struct SuiAppMain: App {
     // TODO: @@@ REFACTOR COMPOSE UI CODE TO iosAppPlatformFunctions.presentMainScreen(...)
     var body: some Scene {
-        let statsPerf = StatsPerf()
+        let statsPerf = SuiVmStatsPerf()
         WindowGroup {
-            let statsDraw = StatsDraw()
-            ViewApp(
+            let statsDraw = SuiVmStatsDraw()
+            SuiViewMain(
                 statsDraw: statsDraw,
                 statsPerf: statsPerf)
         }

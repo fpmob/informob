@@ -14,7 +14,7 @@ struct StatDraw: Identifiable {
     let seconds: Double
 }
 
-class StatsDraw: ObservableObject {
+class SuiVmStatsDraw: ObservableObject {
     @Published var dict: [String:StatDraw] = [:]
 
     init() {}
@@ -44,7 +44,7 @@ struct StatPerf: Identifiable {
     }
 }
 
-class StatsPerf: ObservableObject {
+class SuiVmStatsPerf: ObservableObject {
     @Published var array: [StatPerf] = statsPerfMock()
     init() {}
 }

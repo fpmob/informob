@@ -26,9 +26,9 @@ let colorForeRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
 let colorForeStress = Color(red: 0.4, green: 0.4, blue: 0.8)
 let widthBordPanel  = 4.0
 
-struct ViewApp: View {
-    @ObservedObject var statsDraw: StatsDraw
-    @ObservedObject var statsPerf: StatsPerf
+struct SuiViewMain: View {
+    @ObservedObject var statsDraw: SuiVmStatsDraw
+    @ObservedObject var statsPerf: SuiVmStatsPerf
 
     private var procIncDraws: (String) -> ()
     @State private var hasDraws  = false
@@ -40,32 +40,32 @@ struct ViewApp: View {
 
     var body: some View {
         // TODO: ### REDRAW CYCLE
-        //let _ = procIncDraws("ViewApp")
+        //let _ = procIncDraws("SuiViewMain")
         ZStack {
             Color.black
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
-                    ViewOsStats()
+                    SuiViewOsStats()
                     VStack(spacing: spacing) {
                         Button {
                             hasDraws.toggle()
                             if (!hasDraws) { statsDraw.reset() }
-                        } label: { ViewButtonText(
+                        } label: { SuiViewButtonText(
                             background: colorBackDraw,
                             text: "Draws", x:buttonx, y:spacing) }
                         Button { hasRandom.toggle()
-                        } label: { ViewButtonText(
+                        } label: { SuiViewButtonText(
                             background: colorBackRandom,
                             text: "Random", x:buttonx, y:spacing) }
                     }.padding()
                     //.border(colorBordDebug, width: 1)
                     VStack(spacing: spacing) {
                         Button { hasPerfs.toggle()
-                        } label: { ViewButtonText(
+                        } label: { SuiViewButtonText(
                             background: colorBackPerf,
                             text: "Perfs", x:buttonx, y:spacing) }
                         Button { hasStress.toggle()
-                        } label: { ViewButtonText(
+                        } label: { SuiViewButtonText(
                             background: colorBackStress,
                             text: "Stress", x:buttonx, y:spacing) }
                     }.padding([.bottom, .top, .trailing], nil)
@@ -73,13 +73,13 @@ struct ViewApp: View {
                 }//.border(colorBordDebug, width: 1)
                 HStack(spacing: 0) {
                     if hasDraws {
-                        ViewDraws(
+                        SuiViewDraws(
                             procIncDraws: procIncDraws,
                             statsDraw: statsDraw)
                         .border(colorBordDraw, width: widthBordPanel)
                     }
                     if hasPerfs {
-                        ViewPerfs(
+                        SuiViewPerfs(
                             procIncDraws: procIncDraws,
                             statsPerf: statsPerf)
                         .border(colorBordPerf, width: widthBordPanel)
@@ -87,12 +87,12 @@ struct ViewApp: View {
                 }//.border(colorBordDebug, width: 1)
                 HStack(spacing: 0) {
                     if hasRandom {
-                        ViewRandom(
+                        SuiViewRandom(
                             procIncDraws: procIncDraws)
                         .border(colorBordRandom, width: widthBordPanel)
                     }
                     if hasStress {
-                        ViewStress(
+                        SuiViewStress(
                             procIncDraws: procIncDraws)
                         .border(colorBordStress, width: widthBordPanel)
                     }
@@ -103,8 +103,8 @@ struct ViewApp: View {
         //.border(colorBordDebug, width: 1)
     }
     init(
-        statsDraw: StatsDraw,
-        statsPerf: StatsPerf
+        statsDraw: SuiVmStatsDraw,
+        statsPerf: SuiVmStatsPerf
     ) {
         self.statsDraw = statsDraw
         self.statsPerf = statsPerf
@@ -113,20 +113,20 @@ struct ViewApp: View {
                 statsDraw.update(
                     id: name,
                     changes: "(unknown)"
-                    // TODO: ### ViewApp._printChanges()
+                    // TODO: ### SuiViewMain._printChanges()
                 )
             }}
         }
     }
 }
 
-struct ViewApp_Previews: PreviewProvider {
-	static var previews: some View {
-        ViewApp(statsDraw: StatsDraw(),
-                statsPerf: StatsPerf()) }
+struct SuiViewMain_Previews: PreviewProvider {
+    static var previews: some View {
+        SuiViewMain(statsDraw: SuiVmStatsDraw(),
+                statsPerf: SuiVmStatsPerf()) }
 }
 
-struct ViewButtonText: View {
+struct SuiViewButtonText: View {
     var background: Color
     var text:       String
     var x, y:       CGFloat
@@ -141,7 +141,7 @@ struct ViewButtonText: View {
     }
 }
 
-struct ViewOsStats: View {
+struct SuiViewOsStats: View {
     let osStats = OsStatsPresentKt.osStatsPresent(
         model: PlatformIosKt.platformOsStats())
     var body: some View {
@@ -156,11 +156,11 @@ struct ViewOsStats: View {
     }
 }
 
-struct ViewPerfs: View {
+struct SuiViewPerfs: View {
     let procIncDraws: (String) -> ()
-    @ObservedObject var statsPerf: StatsPerf
+    @ObservedObject var statsPerf: SuiVmStatsPerf
     var body: some View {
-        let _ = procIncDraws("ViewPerfs")
+        let _ = procIncDraws("SuiViewPerfs")
         if #available(iOS 16.0, *) {
             Chart(statsPerf.array) {
                 BarMark(
@@ -190,12 +190,12 @@ struct ViewPerfs: View {
     }
 }
 
-struct ViewDraws: View {
+struct SuiViewDraws: View {
     let procIncDraws: (String) -> ()
-    @ObservedObject var statsDraw: StatsDraw
+    @ObservedObject var statsDraw: SuiVmStatsDraw
     var body: some View {
         // TODO: ### REDRAW CYCLE
-        //let _ = procIncDraws("ViewDraws")
+        //let _ = procIncDraws("SuiViewDraws")
         if #available(iOS 16.0, *) {
             Chart(statsDraw.sortedArray()) {
                 BarMark(
@@ -225,14 +225,14 @@ struct ViewDraws: View {
     }
 }
 
-struct ViewRandom: View {
+struct SuiViewRandom: View {
     let procIncDraws: (String) -> ()
     @State private var countPressed = 0
     @State private var countRandomized = 0
     var body: some View {
-        let _ = procIncDraws("ViewRandom")
+        let _ = procIncDraws("SuiViewRandom")
         ScrollView([.horizontal, .vertical]) {
-            ViewRandomized(depth: 3,
+            SuiViewRandomized(depth: 3,
                 procIncDraws: procIncDraws,
                 countPressed: $countPressed,
                 countRandomized: $countRandomized)
@@ -242,7 +242,7 @@ struct ViewRandom: View {
     }
 }
 
-struct ViewRandomized: View {
+struct SuiViewRandomized: View {
     let depth: Int
     let procIncDraws: (String) -> ()
     @Binding var countPressed: Int
@@ -270,7 +270,7 @@ struct ViewRandomized: View {
             }
         } else if countRandomized >= 0 { // !!! trigger redraws
             let recurse = {
-                ViewRandomized(
+                SuiViewRandomized(
                     depth: depth - 1,
                     procIncDraws: procIncDraws,
                     countPressed: $countPressed,
@@ -297,10 +297,10 @@ struct ViewRandomized: View {
     }
 }
 
-struct ViewStress: View {
+struct SuiViewStress: View {
     let procIncDraws: (String) -> ()
     var body: some View {
-        let _ = procIncDraws("ViewStress")
+        let _ = procIncDraws("SuiViewStress")
         ZStack { colorBackStress }
         //.border(colorBordDebug, width: 1)
     }
