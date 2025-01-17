@@ -47,7 +47,9 @@ struct ViewApp: View {
                 HStack(spacing: 0) {
                     ViewOsStats()
                     VStack(spacing: spacing) {
-                        Button { hasDraws.toggle()
+                        Button {
+                            hasDraws.toggle()
+                            if (!hasDraws) { statsDraw.reset() }
                         } label: { ViewButtonText(
                             background: colorBackDraw,
                             text: "Draws", x:buttonx, y:spacing) }
