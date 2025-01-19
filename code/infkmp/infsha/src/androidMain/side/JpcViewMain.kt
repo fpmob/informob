@@ -1,4 +1,4 @@
-// Copyright 2022 Christopher Augustus
+// Copyright © 2022 - 2025 Christopher Augustus
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,29 +19,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import org.informob.pure.present.*
-import org.informob.ui.theme.InformobTheme
+import org.informob.ui.theme.jpcThemeInf
 
 fun andPresentMainScreen(appMutant: AppMutant): AppMutant = appMutant.apply {
-    ((platformBlobRef as? AndPlatformBlob)?.activity as? ComponentActivity)?.run {
+    ((platformBlobRef as? AndPlatformBlob)?.activity)?.run {
         setContent { // !!! will not work outside of Activity class
-            InformobTheme { appScreen() }
+            jpcThemeInf { jpcViewMain() }
         }
     }
 }
 
 @Composable
-fun appScreen() {
+fun jpcViewMain() {
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.fillMaxSize().background(Color.Black)
     ) {
-        osStatsView(osStatsPresent(platformOsStats()))
+        jpcOsViewStats(osStatsPresent(platformOsStats()))
     }
 }
 
 @Composable
-fun osStatsView(model: OsStatsPresent) {
+fun jpcOsViewStats(model: OsStatsPresent) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -61,7 +61,7 @@ fun osStatsView(model: OsStatsPresent) {
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    InformobTheme {
+fun jpcViewMainPreview() {
+    jpcThemeInf {
     }
 }
