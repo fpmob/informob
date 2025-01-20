@@ -8,11 +8,11 @@
 package org.informob.side
 
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.*
@@ -48,35 +48,52 @@ val colorForeStress = Color(red=0.4f,green=0.4f,blue=0.8f)
 
 val paddingCommon   = 16
 val paddingOsStats  = 8
-val widthBordPanel  = 4.0
+val widthBordPanel  = 4
 
 @Composable
 fun jpcViewMain()
   = Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top,
-        modifier = Modifier.fillMaxSize().background(Color.Black)
+        modifier = Modifier
+            .background(Color.Black)
+            .fillMaxSize()
     ) {
+        var hasDraws  by remember { mutableStateOf(false) }
+        var hasPerfs  by remember { mutableStateOf(false) }
+        var hasRandom by remember { mutableStateOf(false) }
+        var hasStress by remember { mutableStateOf(false) }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(0.36f)
-                   .padding(all = paddingCommon.dp)) {
+            Column(modifier = Modifier
+                    .weight(0.36f)
+                    .padding(all = paddingCommon.dp)) {
                 jpcViewOsStats(osStatsPresent(platformOsStats()))
             }
             Column(modifier = Modifier.weight(0.32f)
                     .padding(top = paddingCommon.dp,
                              end = paddingCommon.dp,
                           bottom = paddingCommon.dp)) {
-                jpcButtonPanel("Draws",  colorBackDraw    ) { }
-                jpcButtonPanel("Random", colorBackRandom) { }
+                jpcButtonPanel("Draws",  colorBackDraw  ) { hasDraws  = !hasDraws }
+                jpcButtonPanel("Random", colorBackRandom) { hasRandom = !hasRandom}
             }
             Column(modifier = Modifier.weight(0.32f)
                     .padding(top = paddingCommon.dp,
                              end = paddingCommon.dp,
                           bottom = paddingCommon.dp)) {
-                jpcButtonPanel("Perfs",  colorBackPerf  ) { }
-                jpcButtonPanel("Stress", colorBackStress) { }
+                jpcButtonPanel("Perfs",  colorBackPerf  ) { hasPerfs  = !hasPerfs }
+                jpcButtonPanel("Stress", colorBackStress) { hasStress = !hasStress }
             }
         }
+        if (hasDraws || hasPerfs)
+            Row(modifier = Modifier.weight(1.0f)) {
+                if (hasDraws)  jpcViewDraws()
+                if (hasPerfs)  jpcViewPerfs()
+            }
+        if (hasRandom || hasStress)
+            Row(modifier = Modifier.weight(1.0f)) {
+                if (hasRandom) jpcViewRandom()
+                if (hasStress) jpcViewStress()
+            }
     }
 
 @Preview(showBackground = true)
@@ -90,7 +107,7 @@ fun jpcButtonPanel(
     color: Color,
     action: () -> Unit
 ) =
-    Button({ action },
+    Button({ action() },
         shape = (2f * paddingCommon).let { RoundedCornerShape(it, it, it, it) },
         colors = ButtonDefaults.buttonColors(backgroundColor = color),
         modifier = Modifier.fillMaxWidth()
@@ -120,3 +137,28 @@ fun jpcViewOsStats(model: OsStatsPresent)
             textAlign = TextAlign.Center,
             style     = MaterialTheme.typography.subtitle1)
     }
+
+@Composable
+fun RowScope.jpcViewPanel(colorBack: Color, colorBord: Color)
+  = Box(modifier = Modifier
+        .background(colorBack)
+        .border(widthBordPanel.dp, colorBord)
+        .fillMaxHeight()
+        .weight(1.0f)
+) {}
+
+@Composable
+fun RowScope.jpcViewDraws()
+  = jpcViewPanel(colorBackDraw,  colorBordDraw)
+
+@Composable
+fun RowScope.jpcViewPerfs()
+  = jpcViewPanel(colorBackPerf,  colorBordPerf)
+
+@Composable
+fun RowScope.jpcViewRandom()
+  = jpcViewPanel(colorBackRandom, colorBordRandom)
+
+@Composable
+fun RowScope.jpcViewStress()
+  = jpcViewPanel(colorBackStress, colorBordStress)
