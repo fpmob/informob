@@ -9,21 +9,6 @@ import SwiftUI
 import Charts // iOS 16
 import infsha
 
-let colorBackDraw   = Color(red: 0.7, green: 0.6, blue: 0.6)
-let colorBackOs     = Color(red: 0.2, green: 0.2, blue: 0.2)
-let colorBackPerf   = Color(red: 0.7, green: 0.7, blue: 0.6)
-let colorBackRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
-let colorBackStress = Color(red: 0.6, green: 0.7, blue: 0.7)
-let colorBordDebug  = Color.yellow
-let colorBordDraw   = Color(red: 0.6, green: 0.0, blue: 0.0)
-let colorBordPerf   = Color(red: 0.6, green: 0.4, blue: 0.0)
-let colorBordRandom = Color(red: 0.0, green: 0.5, blue: 0.0)
-let colorBordStress = Color(red: 0.0, green: 0.2, blue: 0.7)
-let colorForeDraw   = Color(red: 0.6, green: 0.3, blue: 0.3)
-let colorForeOs     = Color(red: 0.7, green: 0.7, blue: 0.7)
-let colorForePerf   = Color(red: 0.6, green: 0.4, blue: 0.2)
-let colorForeRandom = Color(red: 0.6, green: 0.7, blue: 0.6)
-let colorForeStress = Color(red: 0.4, green: 0.4, blue: 0.8)
 let widthBordPanel  = 4.0
 
 struct SuiViewMain: View {
@@ -51,56 +36,56 @@ struct SuiViewMain: View {
                             hasDraws.toggle()
                             if (!hasDraws) { statsDraw.reset() }
                         } label: { SuiViewButtonText(
-                            background: colorBackDraw,
+                            background: colorFrom(ColorPalette.backdraw),
                             text: "Draws", x:buttonx, y:spacing) }
                         Button { hasRandom.toggle()
                         } label: { SuiViewButtonText(
-                            background: colorBackRandom,
+                            background: colorFrom(ColorPalette.backrandom),
                             text: "Random", x:buttonx, y:spacing) }
                     }.padding()
-                    //.border(colorBordDebug, width: 1)
+                    //.border(colorFrom(ColorPalette.borddebug), width: 1)
                     VStack(spacing: spacing) {
                         Button { hasPerfs.toggle()
                         } label: { SuiViewButtonText(
-                            background: colorBackPerf,
+                            background: colorFrom(ColorPalette.backperf),
                             text: "Perfs", x:buttonx, y:spacing) }
                         Button { hasStress.toggle()
                         } label: { SuiViewButtonText(
-                            background: colorBackStress,
+                            background: colorFrom(ColorPalette.backstress),
                             text: "Stress", x:buttonx, y:spacing) }
                     }.padding([.bottom, .top, .trailing], nil)
-                    //.border(colorBordDebug, width: 1)
-                }//.border(colorBordDebug, width: 1)
+                    //.border(colorFrom(ColorPalette.borddebug), width: 1)
+                }//.border(colorFrom(ColorPalette.borddebug), width: 1)
                 HStack(spacing: 0) {
                     if hasDraws {
                         SuiViewDraws(
                             procIncDraws: procIncDraws,
                             statsDraw: statsDraw)
-                        .border(colorBordDraw, width: widthBordPanel)
+                        .border(colorFrom(ColorPalette.borddraw), width: widthBordPanel)
                     }
                     if hasPerfs {
                         SuiViewPerfs(
                             procIncDraws: procIncDraws,
                             statsPerf: statsPerf)
-                        .border(colorBordPerf, width: widthBordPanel)
+                        .border(colorFrom(ColorPalette.bordperf), width: widthBordPanel)
                     }
-                }//.border(colorBordDebug, width: 1)
+                }//.border(colorFrom(ColorPalette.borddebug), width: 1)
                 HStack(spacing: 0) {
                     if hasRandom {
                         SuiViewRandom(
                             procIncDraws: procIncDraws)
-                        .border(colorBordRandom, width: widthBordPanel)
+                        .border(colorFrom(ColorPalette.bordrandom), width: widthBordPanel)
                     }
                     if hasStress {
                         SuiViewStress(
                             procIncDraws: procIncDraws)
-                        .border(colorBordStress, width: widthBordPanel)
+                        .border(colorFrom(ColorPalette.bordstress), width: widthBordPanel)
                     }
-                }//.border(colorBordDebug, width: 1)
+                }//.border(colorFrom(ColorPalette.borddebug), width: 1)
                 Spacer()
             }
         }
-        //.border(colorBordDebug, width: 1)
+        //.border(colorFrom(ColorPalette.borddebug), width: 1)
     }
     init(
         statsDraw: SuiVmStatsDraw,
@@ -137,7 +122,7 @@ struct SuiViewButtonText: View {
         .background(background)
         .foregroundColor(Color.black)
         .cornerRadius(y)
-        //.border(colorBordDebug, width: 1)
+        //.border(colorFrom(ColorPalette.borddebug), width: 1)
     }
 }
 
@@ -150,9 +135,9 @@ struct SuiViewOsStats: View {
             Text(osStats.version).font(.title)
         }
         .padding()
-        .background(colorBackOs)
-        .foregroundColor(colorForeOs)
-        //.border(colorBordDebug, width: 1)
+        .background(     colorFrom(ColorPalette.backos))
+        .foregroundColor(colorFrom(ColorPalette.foreos))
+        //.border(colorFrom(ColorPalette.borddebug), width: 1)
     }
 }
 
@@ -167,7 +152,7 @@ struct SuiViewPerfs: View {
                     x: .value("%", $0.percent),
                     y: .value("?", "    \($0.value) of \($0.max) \($0.id)")
                 )
-                .foregroundStyle(colorForePerf
+                .foregroundStyle(colorFrom(ColorPalette.foreperf)
                     .blendMode(.difference))
                     //.blendMode(.destinationOver))
                 //.opacity(0.5)
@@ -179,13 +164,13 @@ struct SuiViewPerfs: View {
                 AxisMarks(preset: .inset) {
                     AxisValueLabel(centered: true)
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(colorForePerf)
+                    .foregroundStyle(colorFrom(ColorPalette.foreperf))
                 }
             }
-            .background(colorBackPerf)
+            .background(colorFrom(ColorPalette.backperf))
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
-            ZStack { colorBackPerf }
+            ZStack { colorFrom(ColorPalette.backperf) }
         }
     }
 }
@@ -202,7 +187,7 @@ struct SuiViewDraws: View {
                     x: .value("up", $0.updates),
                     y: .value("id", "    \($0.id) \($0.updates)")
                 )
-                .foregroundStyle(colorForeDraw
+                .foregroundStyle(colorFrom(ColorPalette.foredraw)
                     .blendMode(.difference))
                     //.blendMode(.destinationOver))
                 //.opacity(0.5)
@@ -214,13 +199,13 @@ struct SuiViewDraws: View {
                 AxisMarks(preset: .inset) {
                     AxisValueLabel(centered: true)
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(colorForeDraw)
+                    .foregroundStyle(colorFrom(ColorPalette.foredraw))
                 }
             }
-            .background(colorBackDraw)
+            .background(colorFrom(ColorPalette.backdraw))
         } else {
             // TODO: ### CUSTOM CHART FOR iOS < 16
-            ZStack { colorBackDraw }
+            ZStack { colorFrom(ColorPalette.backdraw) }
         }
     }
 }
@@ -237,7 +222,7 @@ struct SuiViewRandom: View {
                 countPressed: $countPressed,
                 countRandomized: $countRandomized)
         }
-        .background(colorBackRandom)
+        .background(colorFrom(ColorPalette.backrandom))
         //.defaultScrollAnchor(.center) !!! iOS 17
     }
 }
@@ -301,7 +286,15 @@ struct SuiViewStress: View {
     let procIncDraws: (String) -> ()
     var body: some View {
         let _ = procIncDraws("SuiViewStress")
-        ZStack { colorBackStress }
-        //.border(colorBordDebug, width: 1)
+        ZStack { colorFrom(ColorPalette.backstress) }
+        //.border(colorFrom(ColorPalette.borddebug), width: 1)
     }
+}
+
+func colorFrom(_ c: ColorPalette) -> Color {
+    return Color(red: Double(c.value.r),
+               green: Double(c.value.g),
+                blue: Double(c.value.b))
+               // TODO: ### alpha not supported
+               //alpha: Double(v.a))
 }
