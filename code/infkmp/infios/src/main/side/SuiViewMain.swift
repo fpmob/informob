@@ -108,7 +108,7 @@ struct SuiViewMain: View {
 struct SuiViewMain_Previews: PreviewProvider {
     static var previews: some View {
         SuiViewMain(statsDraw: ObsStatsDraw(),
-                statsPerf: ObsStatsPerf()) }
+                    statsPerf: ObsStatsPerf()) }
 }
 
 struct SuiViewButtonText: View {
@@ -159,7 +159,7 @@ struct SuiViewPerfs: View {
                 //.zIndex(-1) // !!! iOS 17
             }
             .chartXAxis(.hidden)
-            .chartXScale(domain: 0...100)
+            .chartXScale(domain: 0...99)
             .chartYAxis {
                 AxisMarks(preset: .inset) {
                     AxisValueLabel(centered: true)
@@ -194,7 +194,7 @@ struct SuiViewDraws: View {
                 //.zIndex(-1) // !!! iOS 17
             }
             .chartXAxis(.hidden)
-            .chartXScale(domain: 0...100)
+            .chartXScale(domain: 0...999)
             .chartYAxis {
                 AxisMarks(preset: .inset) {
                     AxisValueLabel(centered: true)
@@ -284,10 +284,64 @@ struct SuiViewRandomized: View {
 
 struct SuiViewStress: View {
     let procIncDraws: (String) -> ()
+    @State private var count = 1
     var body: some View {
         let _ = procIncDraws("SuiViewStress")
-        ZStack { colorFrom(ColorPalette.backstress) }
-        //.border(colorFrom(ColorPalette.borddebug), width: 1)
+        if #available(iOS 17.0, *) {
+            ScrollView([.vertical]) {
+                SuiViewStressGrow(procIncDraws: procIncDraws)
+            }
+            .background(colorFrom(ColorPalette.backstress))
+            .defaultScrollAnchor(.bottom)
+        } else {
+            ScrollView([.vertical]) {
+                SuiViewStressGrow(procIncDraws: procIncDraws)
+            }
+            .background(colorFrom(ColorPalette.backstress))
+            // TODO: ### defaultScrollAnchor FOR iOS < 17
+        }
+    }
+}
+
+struct SuiViewStressGrow: View {
+    let procIncDraws: (String) -> ()
+    @State private var count = 1
+    var body: some View {
+        let _ = procIncDraws("SuiViewStressGrow")
+        if #available(iOS 16.0, *) {
+            SuiViewStressGrid(procIncDraws: procIncDraws, count: $count)
+            .task {
+                do {
+                    while true {
+                        try await Task.sleep(nanoseconds: 100_000_000)
+                        await MainActor.run { count += 1 }
+                    }
+                } catch {}
+            }
+        } else {
+            SuiViewStressGrid(procIncDraws: procIncDraws, count: $count)
+            // TODO: ### CUSTOM .task FOR iOS < 16
+        }
+    }
+}
+
+struct SuiViewStressGrid: View {
+    let procIncDraws: (String) -> ()
+    @Binding var count: Int
+    let radius = 20.0
+    var body: some View {
+        let _ = procIncDraws("SuiViewStressGrid")
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: radius,
+                                               maximum: radius))]) {
+            ForEach(1...count, id: \.self) { i in
+                let c = Color(
+                    red:    Double((count - i) << 0 % count)/Double(count),
+                    green:  Double((count - i) << 1 % count)/Double(count),
+                    blue:   Double((count - i) << 2 % count)/Double(count))
+                RoundedRectangle(cornerRadius: radius)
+                    .fill(c).frame(height: radius)
+            }
+        }.padding()
     }
 }
 
