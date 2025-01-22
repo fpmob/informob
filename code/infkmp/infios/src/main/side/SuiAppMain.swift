@@ -13,9 +13,9 @@ import infsha
 struct SuiAppMain: App {
     // TODO: @@@ REFACTOR COMPOSE UI CODE TO iosAppPlatformFunctions.presentMainScreen(...)
     var body: some Scene {
-        let statsPerf = SuiVmStatsPerf()
+        let statsPerf = ObsStatsPerf()
         WindowGroup {
-            let statsDraw = SuiVmStatsDraw()
+            let statsDraw = ObsStatsDraw()
             SuiViewMain(
                 statsDraw: statsDraw,
                 statsPerf: statsPerf)

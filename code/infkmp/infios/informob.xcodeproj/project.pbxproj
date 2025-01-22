@@ -11,7 +11,7 @@
 		058557D9273AAEEB004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Assets.xcassets */; };
 		2152FB042600AC8F00CF470E /* SuiAppMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* SuiAppMain.swift */; };
 		7555FF83242A565900829871 /* SuiViewMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* SuiViewMain.swift */; };
-		790CC48F2D63397600A7C231 /* SuiVmStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790CC48E2D63397600A7C231 /* SuiVmStats.swift */; };
+		790CC48F2D63397600A7C231 /* SuiObsStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790CC48E2D63397600A7C231 /* SuiObsStats.swift */; };
 		79D8420328F5DACE000C7294 /* IosAppPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D8420228F5DACE000C7294 /* IosAppPlatform.swift */; };
 		79D8420528F5DAD6000C7294 /* IosPlatformBlob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D8420428F5DAD6000C7294 /* IosPlatformBlob.swift */; };
 /* End PBXBuildFile section */
@@ -36,7 +36,7 @@
 		7555FF7B242A565900829871 /* informob.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = informob.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* SuiViewMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuiViewMain.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		790CC48E2D63397600A7C231 /* SuiVmStats.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiVmStats.swift; sourceTree = "<group>"; };
+		790CC48E2D63397600A7C231 /* SuiObsStats.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiObsStats.swift; sourceTree = "<group>"; };
 		79D8420228F5DACE000C7294 /* IosAppPlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IosAppPlatform.swift; sourceTree = "<group>"; };
 		79D8420428F5DAD6000C7294 /* IosPlatformBlob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IosPlatformBlob.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -81,8 +81,8 @@
 		7555FF7D242A565900829871 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				79B77A7D28706165001EDF0B /* main */,
 				058557D7273AAEEB004C7B11 /* preview */,
+				79B77A7D28706165001EDF0B /* main */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -110,7 +110,7 @@
 				79D8420428F5DAD6000C7294 /* IosPlatformBlob.swift */,
 				2152FB032600AC8F00CF470E /* SuiAppMain.swift */,
 				7555FF82242A565900829871 /* SuiViewMain.swift */,
-				790CC48E2D63397600A7C231 /* SuiVmStats.swift */,
+				790CC48E2D63397600A7C231 /* SuiObsStats.swift */,
 			);
 			path = side;
 			sourceTree = "<group>";
@@ -207,7 +207,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				790CC48F2D63397600A7C231 /* SuiVmStats.swift in Sources */,
+				790CC48F2D63397600A7C231 /* SuiObsStats.swift in Sources */,
 				79D8420328F5DACE000C7294 /* IosAppPlatform.swift in Sources */,
 				2152FB042600AC8F00CF470E /* SuiAppMain.swift in Sources */,
 				7555FF83242A565900829871 /* SuiViewMain.swift in Sources */,

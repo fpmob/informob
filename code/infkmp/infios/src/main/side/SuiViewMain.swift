@@ -12,8 +12,8 @@ import infsha
 let widthBordPanel  = 4.0
 
 struct SuiViewMain: View {
-    @ObservedObject var statsDraw: SuiVmStatsDraw
-    @ObservedObject var statsPerf: SuiVmStatsPerf
+    @ObservedObject var statsDraw: ObsStatsDraw
+    @ObservedObject var statsPerf: ObsStatsPerf
 
     private var procIncDraws: (String) -> ()
     @State private var hasDraws  = false
@@ -88,8 +88,8 @@ struct SuiViewMain: View {
         //.border(colorFrom(ColorPalette.borddebug), width: 1)
     }
     init(
-        statsDraw: SuiVmStatsDraw,
-        statsPerf: SuiVmStatsPerf
+        statsDraw: ObsStatsDraw,
+        statsPerf: ObsStatsPerf
     ) {
         self.statsDraw = statsDraw
         self.statsPerf = statsPerf
@@ -107,8 +107,8 @@ struct SuiViewMain: View {
 
 struct SuiViewMain_Previews: PreviewProvider {
     static var previews: some View {
-        SuiViewMain(statsDraw: SuiVmStatsDraw(),
-                statsPerf: SuiVmStatsPerf()) }
+        SuiViewMain(statsDraw: ObsStatsDraw(),
+                statsPerf: ObsStatsPerf()) }
 }
 
 struct SuiViewButtonText: View {
@@ -143,7 +143,7 @@ struct SuiViewOsStats: View {
 
 struct SuiViewPerfs: View {
     let procIncDraws: (String) -> ()
-    @ObservedObject var statsPerf: SuiVmStatsPerf
+    @ObservedObject var statsPerf: ObsStatsPerf
     var body: some View {
         let _ = procIncDraws("SuiViewPerfs")
         if #available(iOS 16.0, *) {
@@ -177,7 +177,7 @@ struct SuiViewPerfs: View {
 
 struct SuiViewDraws: View {
     let procIncDraws: (String) -> ()
-    @ObservedObject var statsDraw: SuiVmStatsDraw
+    @ObservedObject var statsDraw: ObsStatsDraw
     var body: some View {
         // TODO: ### REDRAW CYCLE
         //let _ = procIncDraws("SuiViewDraws")
